@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Geo-Story Micro-Tours | Discover Cities Through Stories",
-  description: "User-created micro-tours with 90-second audio+video clips pinned to locations. Follow curated routes and discover hidden city stories.",
+  title: "PocketGuide | AI-Powered Audio Tours",
+  description: "Discover cities with AI-generated walking tours. Get personalized 90-second stories at every location, optimized routes, and professional audio guides.",
 };
 
 export default function RootLayout({

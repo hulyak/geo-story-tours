@@ -11,7 +11,7 @@ echo "Project: $PROJECT_ID"
 echo ""
 
 # Read JSON file
-LOCATIONS_JSON=$(cat "$(dirname "$0")/locations-data.json")
+LOCATIONS_JSON=$(cat "$(dirname "$0")/locations-data-updated.json")
 
 # Extract locations array and iterate
 echo "$LOCATIONS_JSON" | jq -c '.locations[]' | while read -r location; do

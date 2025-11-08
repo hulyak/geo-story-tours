@@ -1,10 +1,177 @@
-# 🗺️ Geo-Story Micro-Tours
+# 📖 PocketGuide
 
-> AI-powered platform where 5 specialized agents collaborate to create personalized micro-tours with AI-generated 90-second stories and GPU-accelerated voice synthesis.
+> AI-powered audio tour platform where 5 specialized agents collaborate to create personalized walking tours with AI-generated 90-second stories and GPU-accelerated voice synthesis.
 
 ![Status](https://img.shields.io/badge/status-ready-success) ![ADK](https://img.shields.io/badge/Google_ADK-✓-blue) ![Cloud Run](https://img.shields.io/badge/Cloud_Run-7_services-orange) ![GPU](https://img.shields.io/badge/GPU-L4-green)
 
 [🚀 **QUICKSTART**](./QUICKSTART.md) | [📊 Hackathon Plan](./HACKATHON_PLAN.md) | [🎥 Demo Script](./DEMO_VIDEO_SCRIPT.md) | [🌟 **ALL FEATURES**](../HACKATHON_FEATURES.md)
+
+---
+
+## 💡 Inspiration
+
+Traditional audio tours cost $30-50, follow fixed schedules, and offer identical content to everyone. I built PocketGuide to generate personalized tours on demand from a curated location database.
+
+Google's Agent Development Kit enabled me to split the system into specialized agents: curator, route planner, storyteller, quality controller, and voice synthesizer. This multi-agent approach mirrors how tour companies operate.
+
+## 🎯 What it does
+
+PocketGuide generates personalized walking tours in under 60 seconds using five specialized agents:
+
+- **Tour Curator**: Selects locations based on user preferences
+- **Route Optimizer**: Calculates optimal walking paths using Haversine distance
+- **Storyteller**: Generates unique 90-second narratives per location
+- **Moderator**: Validates content quality and appropriateness
+- **Voice Synthesizer**: Creates audio using L4 GPU-accelerated text-to-speech
+
+Additional features:
+- Interactive maps with Street View and real-time route visualization
+- Category-based search (history, art, food, hidden gems)
+- 25 curated Paris locations generate thousands of tour combinations
+- Full-screen UI with coral/orange branding
+
+## 🛠️ How we built it
+
+### Architecture
+- **Frontend**: Next.js 15 (App Router) deployed to Cloud Run
+- **5 AI Agents**: Built with Google ADK + Gemini 2.5 Flash, deployed as separate Cloud Run services
+- **Tour Orchestrator**: FastAPI service coordinating agent workflow
+- **Database**: Firestore for locations, tours, analytics
+- **Voice Synthesis**: GPU-accelerated (L4) text-to-speech service
+- **Background Jobs**: Cloud Run Jobs for analytics aggregation and batch processing
+
+### Multi-Agent System
+```
+User Request → Tour Orchestrator
+    ↓
+[Curator Agent] Firestore → Selects 5-8 locations based on interests
+    ↓
+[Optimizer Agent] Haversine → Calculates optimal walking route
+    ↓
+[Storyteller Agent] Gemini 2.5 → Generates unique 90-second narratives
+    ↓
+[Moderator Agent] Quality Check → Ensures appropriate content
+    ↓
+[Voice Agent] L4 GPU → Creates professional audio
+    ↓
+Complete Tour (stored in Firestore)
+```
+
+### Key Technical Decisions
+1. **Async Generator Pattern**: Each agent returns streaming responses via `async for chunk in agent.run_async(prompt)`
+2. **Stateless Agents**: Removed InMemoryRunner to avoid session management issues
+3. **REST APIs**: All agents expose `/invoke` endpoints for orchestrator communication
+4. **Image Curation**: Unique Unsplash images (1200px, 80% quality) for each location
+5. **Color Psychology**: Warm coral/orange scheme (inspired by GetYourGuide/Viator) instead of purple
+
+### Deployment Stack
+- **9 Cloud Run Services**: Frontend + 5 Agents + Orchestrator + 2 Workers
+- **Total Infrastructure**: Fully serverless, auto-scaling, globally distributed
+
+## 🚧 Challenges we ran into
+
+### 1. Agent Session Management
+**Problem**: ADK's `InMemoryRunner` created session conflicts - `ValueError: Session not found: e2db10a3...`
+
+**Solution**: Removed all session management. Invoked agents directly with `async for chunk in agent.run_async(prompt)` instead of awaiting a session-based runner.
+
+### 2. Async Generator Misunderstanding
+**Problem**: `TypeError: object async_generator can't be used in 'await' expression`
+
+**Solution**: ADK agents return async generators, not awaitables. Changed from:
+```python
+response = await agent.run_async(prompt)  # ❌ Wrong
+```
+to:
+```python
+async for chunk in agent.run_async(prompt):  # ✅ Correct
+    full_response += chunk.text
+```
+
+### 3. JSON Parsing Errors from Orchestrator
+**Problem**: Orchestrator received HTML error pages instead of JSON, causing `Expecting value: line 2 column 1 (char 1)`
+
+**Root Cause**: Agents were failing silently due to session errors
+
+**Solution**: Fixed agent invocation (challenge #1), added proper error handling in FastAPI
+
+### 4. Duplicate Images Breaking UX
+**Problem**: 10 out of 25 locations used the same Unsplash image
+
+**Solution**: Researched and assigned unique, high-quality images for each Paris landmark:
+- Eiffel Tower: `photo-1511739001486-6bfe10ce785f`
+- Sacré-Cœur: `photo-1431274172761-fca41d930114`
+- Arc de Triomphe: `photo-1548625149-fc4a29cf7092`
+- (+ 22 more unique images)
+
+### 5. Local Development vs Production Auth
+**Problem**: Localhost couldn't fetch from Firestore (`Could not load default credentials`)
+
+**Solution**: Directed testing to deployed Cloud Run URL where automatic service account auth works
+
+### 6. Full-Screen Hero + Search UX
+**Problem**: Search bar worked but results were hidden below the fold
+
+**Solution**: Added auto-scroll: when user types, page smoothly scrolls to `#locations` section after 100ms delay
+
+## 🏆 Accomplishments that we're proud of
+
+1. **Multi-Agent Orchestration**: Built a 5-agent system where agents communicate and pass data sequentially
+2. **Cloud Run Deployment**: Deployed all 9 services with error handling and auto-scaling
+3. **GPU Integration**: Deployed L4 GPU-powered voice synthesis on Cloud Run
+4. **Model Migration**: Migrated all agents from `gemini-2.0-flash-exp` to `gemini-2.5-flash`
+5. **UI Design**: Researched GetYourGuide, Viator, and Airbnb to choose warm color scheme
+6. **Image Curation**: Selected 25 unique Unsplash images for each Paris landmark
+7. **Streaming Implementation**: Implemented async generators for real-time agent communication
+8. **Rebrand**: Transformed from "GeoStory" to "PocketGuide" with book icon and coral branding
+
+## 📚 What we learned
+
+### Google ADK
+- **Agents are async generators**, not simple awaitable functions
+- **Stateless > Stateful**: InMemoryRunner caused more problems than it solved
+- **Model selection**: Gemini 2.5 Flash is optimized for agentic use cases
+- **Tool calling patterns**: How to structure tools for Firestore queries, distance calculations, etc.
+
+### Cloud Run
+- **GPU deployment**: How to configure L4 GPUs in Cloud Run YAML
+- **Service-to-service auth**: Automatic when using `--allow-unauthenticated`
+- **Buildpacks**: Cloud Run auto-detects Next.js and Python dependencies
+- **Background jobs**: Difference between Cloud Run Services (HTTP) vs Jobs (batch)
+
+### Multi-Agent Patterns
+- **Sequential orchestration**: Tour Curator → Optimizer → Storyteller → Moderator works better than parallel
+- **Error propagation**: One agent failure should gracefully fail the whole tour (vs partial results)
+- **Context passing**: Each agent needs the full tour context, not just previous agent output
+
+### UX Psychology
+- **Warm colors build trust**: Orange/coral (travel industry standard) > Purple (tech-focused)
+- **Auto-scroll is critical**: Users don't know results are below the fold
+- **Full-screen heroes convert**: Modern landing pages prioritize above-the-fold impact
+- **Unique images matter**: Users notice duplicate photos immediately
+
+## 🚀 What's next for PocketGuide
+
+### Near Term (Post-Hackathon)
+- **More Cities**: Expand beyond Paris - NYC, Tokyo, London, Istanbul
+- **Offline Mode**: Download tours for travel without internet
+- **Social Features**: Share tours, follow other users, collaborative routes
+- **Advanced Personalization**: ML model learns from user ratings to improve future tours
+
+### Long Term (Product Vision)
+- **Multi-City Tours**: "European Art Tour" spanning Paris → Florence → Madrid
+- **Real-Time Adaptation**: Agents adjust tour based on weather, crowd levels, time of day
+- **Augmented Reality**: Point phone at landmark → see AI-generated overlays
+- **Community Content**: Let local guides create location pools for their neighborhoods
+- **Enterprise API**: White-label solution for hotels, tourism boards, travel agencies
+- **Voice Customization**: Choose narrator voice, accent, speaking style
+
+### Technical Roadmap
+- **Agent Memory**: Give agents context of user's past tours for better recommendations
+- **Cost Optimization**: Implement caching layer for frequently generated stories
+- **A/B Testing**: Experiment with different agent prompts, story lengths, route algorithms
+- **Analytics Dashboard**: Help curators understand which locations/categories are most popular
+- **Mobile Apps**: Native iOS/Android with offline-first architecture
 
 ---
 

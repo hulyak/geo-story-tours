@@ -41,19 +41,6 @@ export default function Home() {
     }
   };
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    // Only auto-scroll once when user starts typing (3+ characters)
-    if (value.length === 3 && searchQuery.length === 2) {
-      setTimeout(() => {
-        const element = document.getElementById('locations');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
-  };
-
   const [creatingTour, setCreatingTour] = useState(false);
 
   const handleCreateTour = async (interests?: string[]) => {
@@ -101,22 +88,19 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-white">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
+                <MapPin className="h-6 w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-rose-500 bg-clip-text text-transparent">
-                PocketGuide
+              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                GeoStory
               </span>
             </div>
             <div className="hidden md:flex items-center gap-6">
-              <a href="#locations" className="text-gray-700 hover:text-orange-500 font-medium transition">Explore</a>
-              <a href="#how-it-works" className="text-gray-700 hover:text-orange-500 font-medium transition">How it Works</a>
+              <a href="#locations" className="text-gray-700 hover:text-purple-600 font-medium transition">Explore</a>
+              <a href="#how-it-works" className="text-gray-700 hover:text-purple-600 font-medium transition">How it Works</a>
               <button
                 onClick={() => handleCreateTour()}
-                className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
               >
                 Create Tour
               </button>
@@ -126,18 +110,18 @@ export default function Home() {
       </nav>
 
       {/* Hero Section with Search */}
-      <div className="relative bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 overflow-hidden min-h-screen flex items-center">
+      <div className="relative bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1YjIxYjYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMyAzLTYgNi02czYgMyA2IDYtMyA2LTYgNi02LTMtNi02em0wIDI4YzAtMyAzLTYgNi02czYgMyA2IDYtMyA2LTYgNi02LTMtNi02ek0xNiA0NGMtMy0wLTYtMy02LTZzMy02IDYtNiA2IDMgNiA2LTMgNi02IDZ6bTAtMjhjLTMtMC02LTMtNi02czMtNiA2LTYgNiAzIDYgNi0zIDYtNiA2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 rounded-full mb-6">
+            <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full mb-6">
               <Award className="h-4 w-4 mr-2" />
               <span className="text-sm font-semibold">Powered by 5 AI Agents</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 leading-tight">
               Discover Cities Through
               <br />
-              <span className="bg-gradient-to-r from-orange-500 via-rose-500 to-pink-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 90-Second Stories
               </span>
             </h1>
@@ -151,21 +135,18 @@ export default function Home() {
                 <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search our curated locations..."
+                  placeholder="Search Paris attractions..."
                   value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-16 pr-6 py-5 text-lg text-gray-900 placeholder-gray-400 rounded-2xl border-2 border-gray-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all outline-none shadow-lg bg-white"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-16 pr-6 py-5 text-lg rounded-2xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none shadow-lg"
                 />
               </div>
-              <p className="text-center text-sm text-gray-500 mt-3">
-                {locations.length} handpicked Paris locations with AI-generated stories
-              </p>
             </div>
 
             {/* Quick Stats */}
             <div className="flex flex-wrap justify-center gap-8 text-sm">
               <div className="flex items-center gap-2 text-gray-600">
-                <Users className="h-5 w-5 text-orange-500" />
+                <Users className="h-5 w-5 text-purple-600" />
                 <span className="font-medium">10,000+ Tours Created</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
@@ -191,7 +172,7 @@ export default function Home() {
           <button
             onClick={() => handleCreateTour(['history', 'art'])}
             disabled={creatingTour}
-            className="px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-all disabled:opacity-50"
+            className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all disabled:opacity-50"
           >
             {creatingTour ? 'Creating...' : 'Create Custom Tour'}
           </button>
@@ -206,10 +187,10 @@ export default function Home() {
               key={idx}
               onClick={() => handleCreateTour(tour.interests)}
               disabled={creatingTour}
-              className="text-left bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border-2 border-orange-100 hover:border-orange-300 transition-all hover:shadow-lg group disabled:opacity-50"
+              className="text-left bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-2xl border-2 border-purple-100 hover:border-purple-300 transition-all hover:shadow-lg group disabled:opacity-50"
             >
               <div className="text-4xl mb-3">{tour.icon}</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-500 transition">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition">
                 {tour.title}
               </h3>
               <div className="flex gap-4 text-sm text-gray-600 mb-3">
@@ -246,7 +227,7 @@ export default function Home() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-6 py-3 rounded-xl font-medium transition-all ${
                   selectedCategory === category
-                    ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg scale-105'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg scale-105'
                     : 'bg-white text-gray-700 hover:bg-gray-100 shadow border border-gray-200'
                 }`}
               >
@@ -258,7 +239,7 @@ export default function Home() {
           {/* Locations Grid */}
           {loading ? (
             <div className="text-center py-20">
-              <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent"></div>
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent"></div>
               <p className="mt-6 text-gray-600 text-lg">Loading locations...</p>
             </div>
           ) : filteredLocations.length === 0 ? (
@@ -268,7 +249,7 @@ export default function Home() {
           ) : (
             <>
               <div className="mb-6 text-gray-600 text-center">
-                <span className="font-bold text-orange-500">{filteredLocations.length}</span> location{filteredLocations.length !== 1 ? 's' : ''} found
+                <span className="font-bold text-purple-600">{filteredLocations.length}</span> location{filteredLocations.length !== 1 ? 's' : ''} found
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredLocations.map((location: any) => (
@@ -298,7 +279,7 @@ export default function Home() {
                     {/* Content */}
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-orange-500 transition-colors line-clamp-2">
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors line-clamp-2">
                           {location.name}
                         </h3>
                       </div>
@@ -310,7 +291,7 @@ export default function Home() {
                           <Clock className="h-4 w-4" />
                           <span>{location.average_visit_minutes || location.duration || 15} min</span>
                         </div>
-                        <span className="text-xs px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
+                        <span className="text-xs px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
                           {location.categories[0]}
                         </span>
                       </div>
@@ -377,7 +358,7 @@ export default function Home() {
               <div className="border-t border-b border-gray-200 py-6 mb-6">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <Clock className="h-8 w-8 mx-auto text-orange-500 mb-2" />
+                    <Clock className="h-8 w-8 mx-auto text-purple-600 mb-2" />
                     <div className="text-sm text-gray-500">Visit Duration</div>
                     <div className="font-bold text-gray-900">{selectedLocation.average_visit_minutes || 15} min</div>
                   </div>
@@ -407,7 +388,7 @@ export default function Home() {
                   {selectedLocation.categories.map((cat: string) => (
                     <span
                       key={cat}
-                      className="px-4 py-2 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full font-medium"
+                      className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full font-medium"
                     >
                       {cat}
                     </span>
@@ -421,7 +402,7 @@ export default function Home() {
                     href={`https://www.google.com/maps/search/?api=1&query=${selectedLocation.coordinates.lat},${selectedLocation.coordinates.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                   >
                     <MapPin className="h-5 w-5" />
                     View on Map
@@ -432,7 +413,7 @@ export default function Home() {
                     setSelectedLocation(null);
                     handleCreateTour([selectedLocation.categories[0]]);
                   }}
-                  className="flex-1 px-6 py-4 border-2 border-orange-500 text-orange-500 rounded-xl font-semibold hover:bg-orange-50 transition-all"
+                  className="flex-1 px-6 py-4 border-2 border-purple-600 text-purple-600 rounded-xl font-semibold hover:bg-purple-50 transition-all"
                 >
                   Include in Tour
                 </button>
@@ -456,7 +437,7 @@ export default function Home() {
               { step: '3', title: 'Start Exploring', desc: 'Follow your custom tour with 90-second audio stories', icon: '🚶' }
             ].map((item, idx) => (
               <div key={idx} className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-rose-500 text-white rounded-2xl text-2xl font-bold mb-6 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-2xl text-2xl font-bold mb-6 shadow-lg">
                   {item.step}
                 </div>
                 <div className="text-5xl mb-4">{item.icon}</div>
