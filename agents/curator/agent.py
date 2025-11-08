@@ -118,7 +118,7 @@ def publish_to_optimizer_tool(tour_id: str, tour_data: Dict[str, Any]) -> str:
 # Define the Tour Curator Agent using Google ADK
 curator_agent = Agent(
     name="tour_curator_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
 
     instruction="""
     You are the Tour Curator Agent for Geo-Story Micro-Tours.

@@ -87,7 +87,7 @@ def publish_to_moderator_tool(tour_data: Dict[str, Any]) -> str:
 # Define the Storytelling Agent using Google ADK
 storytelling_agent = Agent(
     name="storytelling_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
 
     instruction="""
     You are a master storyteller creating micro-tour narratives.

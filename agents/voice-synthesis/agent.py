@@ -185,7 +185,7 @@ def get_pending_synthesis_jobs_tool() -> str:
 # Define the Voice Synthesis Agent using Google ADK
 voice_synthesis_agent = Agent(
     name="voice_synthesis_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
 
     instruction="""
     You are the Voice Synthesis Agent for Geo-Story Micro-Tours.

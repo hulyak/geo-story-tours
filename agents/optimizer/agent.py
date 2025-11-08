@@ -147,7 +147,7 @@ def publish_to_storyteller_tool(tour_id: str, tour_data: Dict[str, Any]) -> str:
 # Define the Route Optimizer Agent using Google ADK
 optimizer_agent = Agent(
     name="route_optimizer_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
 
     instruction="""
     You are the Route Optimizer Agent for Geo-Story Micro-Tours.

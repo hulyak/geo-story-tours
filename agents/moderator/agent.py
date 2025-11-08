@@ -69,7 +69,7 @@ def update_tour_status_tool(tour_id: str, status: str, moderation_results: List[
 # Define the Content Moderator Agent using Google ADK
 moderator_agent = Agent(
     name="content_moderator_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-2.5-flash",
 
     instruction="""
     You are the Content Moderator Agent for Geo-Story Micro-Tours.

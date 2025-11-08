@@ -4,12 +4,9 @@ Serves the Google ADK agent as a FastAPI application.
 """
 
 import os
-import uuid
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from agent import agent
-from google.adk.runners import InMemoryRunner
-from google.genai import types
 import uvicorn
 
 # Get port from environment
@@ -17,9 +14,6 @@ PORT = int(os.environ.get('PORT', 8080))
 
 # Create FastAPI app wrapper
 app = FastAPI(title=agent.name)
-
-# Create ADK runner for agent
-runner = InMemoryRunner(agent=agent)
 
 @app.get("/")
 async def root():
@@ -38,24 +32,18 @@ async def invoke_agent(request: Request):
         body = await request.json()
         prompt = body.get("prompt", "")
 
-        # Create user content in ADK format
-        content = types.Content(role='user', parts=[types.Part(text=prompt)])
+        # Invoke the agent directly (stateless) - pass prompt as positional arg
+        response = await agent.run_async(prompt)
 
-        # Generate unique session IDs
-        user_id = str(uuid.uuid4())
-        session_id = str(uuid.uuid4())
-
-        # Invoke the agent using the runner
+        # Extract the text response
         full_response = ""
-        async for event in runner.run_async(
-            user_id=user_id,
-            session_id=session_id,
-            new_message=content
-        ):
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    full_response = event.content.parts[0].text
-                    break
+        if response and hasattr(response, 'text'):
+            full_response = response.text
+        elif response and hasattr(response, 'content'):
+            if response.content and response.content.parts:
+                full_response = response.content.parts[0].text
+        else:
+            full_response = str(response)
 
         return JSONResponse(content={
             "success": True,

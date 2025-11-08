@@ -35,7 +35,7 @@ publisher = pubsub_v1.PublisherClient()
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-2.0-flash-exp')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 else:
     logger.warning("GEMINI_API_KEY not set, using mock responses")
     model = None
@@ -136,7 +136,7 @@ class StorytellingAgent:
                 "estimated_duration_seconds": estimated_duration,
                 "tone": audience,
                 "generated_at": datetime.now().isoformat(),
-                "model_version": "gemini-2.0-flash-exp"
+                "model_version": "gemini-2.5-flash"
             }
 
         except Exception as e:
