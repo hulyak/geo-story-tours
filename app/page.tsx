@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapPin, Clock, Star, TrendingUp, X } from 'lucide-react';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
 
 export default function Home() {
   const router = useRouter();
@@ -40,69 +41,9 @@ export default function Home() {
   };
 
   const [creatingTour, setCreatingTour] = useState(false);
-  const [tourProgress, setTourProgress] = useState(0);
-  const [tourStatus, setTourStatus] = useState('');
-
-  const pollTourStatus = async (jobId: string) => {
-    const pollInterval = setInterval(async () => {
-      try {
-        const statusResponse = await fetch(`https://tour-orchestrator-168041541697.europe-west1.run.app/tour-status/${jobId}`);
-        const statusData = await statusResponse.json();
-
-        if (statusData.success) {
-          setTourProgress(statusData.progress || 0);
-
-          // Update status message based on current step
-          const statusMessages: Record<string, string> = {
-            'queued': '🔄 Starting tour creation...',
-            'curator_running': '🎯 Curator selecting locations...',
-            'optimizer_running': '🗺️  Optimizer calculating route...',
-            'storyteller_running': '📖 Storyteller generating stories...',
-            'moderator_running': '✨ Moderator reviewing content...',
-            'voice_synthesis_running': '🎙️ Voice Synthesis creating audio...',
-            'completed': '✅ Tour created successfully!',
-            'failed': '❌ Tour creation failed'
-          };
-
-          setTourStatus(statusMessages[statusData.status] || 'Processing...');
-
-          if (statusData.status === 'completed') {
-            clearInterval(pollInterval);
-            setCreatingTour(false);
-            setTourProgress(0);
-            setTourStatus('');
-
-            // Navigate to the tour detail page
-            router.push(`/tours/${statusData.tour_id}`);
-          } else if (statusData.status === 'failed') {
-            clearInterval(pollInterval);
-            setCreatingTour(false);
-            alert(`Error creating tour: ${statusData.error}`);
-            setTourProgress(0);
-            setTourStatus('');
-          }
-        }
-      } catch (error) {
-        console.error('Error polling status:', error);
-      }
-    }, 2000); // Poll every 2 seconds
-
-    // Stop polling after 5 minutes
-    setTimeout(() => {
-      clearInterval(pollInterval);
-      if (creatingTour) {
-        setCreatingTour(false);
-        setTourProgress(0);
-        setTourStatus('');
-        alert('Tour creation timed out. Please try again.');
-      }
-    }, 300000);
-  };
 
   const handleCreateTour = async () => {
     setCreatingTour(true);
-    setTourProgress(0);
-    setTourStatus('🚀 Initializing...');
 
     try {
       // Call async endpoint
@@ -120,8 +61,8 @@ export default function Home() {
       const data = await response.json();
 
       if (data.success && data.job_id) {
-        // Start polling for status
-        pollTourStatus(data.job_id);
+        // Redirect to status page (it handles all polling)
+        router.push(`/tours/status/${data.job_id}`);
       } else {
         setCreatingTour(false);
         alert('Error creating tour. Please try again.');
@@ -129,8 +70,6 @@ export default function Home() {
     } catch (error) {
       console.error('Error creating tour:', error);
       setCreatingTour(false);
-      setTourProgress(0);
-      setTourStatus('');
       alert('Error creating tour. Please try again.');
     }
   };
@@ -375,6 +314,11 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Analytics Dashboard */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <AnalyticsDashboard />
+      </div>
 
       {/* AI Features Section */}
       <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white py-20">

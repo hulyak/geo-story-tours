@@ -10,7 +10,7 @@ interface Location {
 }
 
 // Calculate distance between two coordinates using Haversine formula (in km)
-function calculateDistance(
+export function calculateDistance(
   lat1: number,
   lng1: number,
   lat2: number,

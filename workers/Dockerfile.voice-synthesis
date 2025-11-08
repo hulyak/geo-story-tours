@@ -1,0 +1,23 @@
+FROM nvidia/cuda:12.1.0-base-ubuntu22.04
+
+# Install Python
+RUN apt-get update && apt-get install -y \
+    python3.11 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy worker script
+COPY voice-synthesis-batch.py .
+
+# Run as non-root user
+RUN useradd -m -u 1000 worker && chown -R worker:worker /app
+USER worker
+
+# Command to run the worker
+CMD ["python3", "voice-synthesis-batch.py"]

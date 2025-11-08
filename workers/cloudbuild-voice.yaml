@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/durable-torus-477513-g3/voice-synthesis-worker', '-f', 'Dockerfile.voice-synthesis', '.']
+images:
+- 'gcr.io/durable-torus-477513-g3/voice-synthesis-worker'

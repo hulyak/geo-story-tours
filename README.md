@@ -1,16 +1,48 @@
 # 🗺️ Geo-Story Micro-Tours
 
-[![Cloud Run](https://img.shields.io/badge/Google%20Cloud-Run-4285F4?logo=google-cloud)](https://cloud.google.com/run)
-[![GPU](https://img.shields.io/badge/GPU-NVIDIA%20L4-76B900?logo=nvidia)](https://www.nvidia.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
-**Cloud Run Hackathon 2025 - AI Agents + GPU Categories**
-
 > AI-powered platform where 5 specialized agents collaborate to create personalized micro-tours with AI-generated 90-second stories and GPU-accelerated voice synthesis.
 
 ![Status](https://img.shields.io/badge/status-ready-success) ![ADK](https://img.shields.io/badge/Google_ADK-✓-blue) ![Cloud Run](https://img.shields.io/badge/Cloud_Run-7_services-orange) ![GPU](https://img.shields.io/badge/GPU-L4-green)
 
-[🚀 **QUICKSTART**](./QUICKSTART.md) | [📊 Hackathon Plan](./HACKATHON_PLAN.md) | [🎥 Demo Script](./DEMO_VIDEO_SCRIPT.md)
+[🚀 **QUICKSTART**](./QUICKSTART.md) | [📊 Hackathon Plan](./HACKATHON_PLAN.md) | [🎥 Demo Script](./DEMO_VIDEO_SCRIPT.md) | [🌟 **ALL FEATURES**](../HACKATHON_FEATURES.md)
+
+---
+
+## ✨ New Features Added
+
+### 🗺️ Interactive Map System
+- **Custom category-based markers** (29 emoji icons)
+- **Real-time route visualization** with direction arrows
+- **Street View integration** for location preview
+- **Nearby places** (restaurants, cafes within 500m)
+- **Route optimization** with distance calculations
+- **Export as GPX/KML** for GPS devices
+- **Smart info windows** with distance & walking time
+
+### 🤖 Background Workers & Jobs
+- **Analytics aggregation worker** (daily at midnight)
+- **Voice synthesis batch worker** (GPU-powered, every 5min)
+- **Cloud Tasks queue** for async tour creation
+- **3 Pub/Sub topics** for event-driven processing
+- **Cloud Scheduler** for automated jobs
+
+### 📊 Analytics Dashboard
+- Real-time tour metrics
+- Popular locations leaderboard (Top 10)
+- Average duration tracking
+- Community insights
+
+### ⭐ User Feedback System
+- 5-star rating with emoji feedback
+- Helpful/Not Helpful votes
+- Text feedback (500 chars)
+- Auto-triggers content regeneration on low ratings
+
+### 🚀 Async Tour Creation
+- Dedicated status page with real-time progress
+- 5-agent workflow visualization
+- Estimated time remaining
+- Auto-redirect when complete
 
 ---
 

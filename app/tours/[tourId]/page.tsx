@@ -6,6 +6,7 @@ import { MapPin, Clock, Music, ChevronLeft, ChevronRight, Play, Pause, Download,
 import dynamic from 'next/dynamic';
 import { exportTour } from '../../utils/tourExport';
 import { optimizeRoute, calculateTotalDistance, formatDistance, estimateWalkingTime } from '../../utils/routeOptimization';
+import TourRating from '../../components/TourRating';
 
 // Dynamically import the map component (client-side only)
 const TourMap = dynamic(() => import('../../components/TourMap'), {
@@ -370,6 +371,11 @@ export default function TourDetailPage() {
               </>
             )}
           </div>
+        </div>
+
+        {/* Rating and Feedback Section */}
+        <div className="mt-8">
+          <TourRating tourId={tourId} />
         </div>
       </div>
     </div>
