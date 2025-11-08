@@ -1,0 +1,162 @@
+[
+  {
+    "id": "loc_historic_city_hall",
+    "name": "Historic City Hall",
+    "categories": ["history", "architecture"],
+    "coordinates": {
+      "lat": 40.7128,
+      "lng": -74.0060
+    },
+    "description": "Built in 1803, this neoclassical building served as the seat of government for over a century.",
+    "historical_context": "The cornerstone was laid by Mayor Edward Livingston in the presence of Revolutionary War veterans. The building survived the Great Fire of 1835 and has been a National Historic Landmark since 1966.",
+    "average_visit_minutes": 5,
+    "accessibility": ["wheelchair_accessible", "elevator", "audio_guide"],
+    "best_time_to_visit": "morning",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1486299267070-83823f5448dd"
+  },
+  {
+    "id": "loc_hidden_alleyway_mural",
+    "name": "Hidden Alleyway Mural",
+    "categories": ["art", "hidden gems", "street art"],
+    "coordinates": {
+      "lat": 40.7138,
+      "lng": -74.0050
+    },
+    "description": "A stunning 90-foot mural by local artist Maria Santos, depicting the neighborhood's immigrant history.",
+    "historical_context": "Painted in 2019 as part of the 'Voices of the City' initiative. The mural features portraits of 50 neighborhood residents, each telling their family's immigration story.",
+    "average_visit_minutes": 4,
+    "accessibility": ["wheelchair_accessible", "outdoor"],
+    "best_time_to_visit": "afternoon",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8"
+  },
+  {
+    "id": "loc_artisan_coffee_house",
+    "name": "Caffe Angelo",
+    "categories": ["food", "local culture", "hidden gems"],
+    "coordinates": {
+      "lat": 40.7148,
+      "lng": -74.0040
+    },
+    "description": "Family-owned since 1950, this espresso bar still uses the original Faema E61 machine.",
+    "historical_context": "Angelo Ricci opened this café after emigrating from Naples. The recipes haven't changed in 75 years, and three generations still work here daily.",
+    "average_visit_minutes": 6,
+    "accessibility": ["wheelchair_accessible", "restroom", "wifi"],
+    "best_time_to_visit": "morning",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1511920170033-f8396924c348"
+  },
+  {
+    "id": "loc_revolutionary_war_monument",
+    "name": "Battle of Brooklyn Monument",
+    "categories": ["history", "outdoor"],
+    "coordinates": {
+      "lat": 40.7158,
+      "lng": -74.0030
+    },
+    "description": "Commemorates the largest battle of the Revolutionary War, fought on August 27, 1776.",
+    "historical_context": "Over 10,000 soldiers fought here in what would become Washington's first major defeat. The monument, erected in 1908, marks the exact spot where General Sullivan's division made their last stand.",
+    "average_visit_minutes": 5,
+    "accessibility": ["wheelchair_accessible", "seating", "shade"],
+    "best_time_to_visit": "any",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4"
+  },
+  {
+    "id": "loc_street_art_gallery_walk",
+    "name": "Open-Air Gallery Walk",
+    "categories": ["art", "outdoor", "photography"],
+    "coordinates": {
+      "lat": 40.7168,
+      "lng": -74.0020
+    },
+    "description": "A two-block stretch featuring rotating installations by emerging local artists.",
+    "historical_context": "Established in 2015 when the city partnered with the Arts Council to revitalize abandoned storefronts. Now features 20+ installations that change quarterly.",
+    "average_visit_minutes": 7,
+    "accessibility": ["wheelchair_accessible", "outdoor", "benches"],
+    "best_time_to_visit": "golden_hour",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1536924940846-227afb31e2a5"
+  },
+  {
+    "id": "loc_historic_market_square",
+    "name": "Old Market Square",
+    "categories": ["history", "food", "local culture"],
+    "coordinates": {
+      "lat": 40.7178,
+      "lng": -74.0010
+    },
+    "description": "Operating since 1812, this farmers market has been the neighborhood's social hub for over two centuries.",
+    "historical_context": "Originally a livestock market, it transformed into a produce market in the 1850s. The cast-iron pavilion was added in 1889 and is one of only three remaining in the country.",
+    "average_visit_minutes": 8,
+    "accessibility": ["wheelchair_accessible", "restroom", "seating", "food_vendors"],
+    "best_time_to_visit": "saturday_morning",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1488459716781-31db52582fe9"
+  },
+  {
+    "id": "loc_secret_garden",
+    "name": "The Secret Garden at St. Mary's",
+    "categories": ["hidden gems", "nature", "quiet"],
+    "coordinates": {
+      "lat": 40.7188,
+      "lng": -74.0000
+    },
+    "description": "A hidden courtyard garden maintained by neighborhood volunteers, accessible through an unmarked gate.",
+    "historical_context": "This 200-year-old church garden was nearly lost to development in 1995. Local residents saved it and now maintain over 100 species of plants, many dating back to the 1800s.",
+    "average_visit_minutes": 6,
+    "accessibility": ["stairs_only", "seating", "quiet"],
+    "best_time_to_visit": "spring",
+    "admission": "donation_requested",
+    "image_url": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae"
+  },
+  {
+    "id": "loc_jazz_corner",
+    "name": "Blue Note Corner",
+    "categories": ["music", "history", "culture"],
+    "coordinates": {
+      "lat": 40.7198,
+      "lng": -73.9990
+    },
+    "description": "The exact corner where Miles Davis was photographed in 1958, now marked with a bronze plaque.",
+    "historical_context": "This intersection was the heart of the jazz scene in the 1950s-60s. Five legendary jazz clubs operated within two blocks, and musicians would jam here after hours.",
+    "average_visit_minutes": 4,
+    "accessibility": ["wheelchair_accessible", "outdoor"],
+    "best_time_to_visit": "evening",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1511192336575-5a79af67a629"
+  },
+  {
+    "id": "loc_bookstore_poetry_corner",
+    "name": "Shakespeare & Co. Basement",
+    "categories": ["culture", "hidden gems", "literature"],
+    "coordinates": {
+      "lat": 40.7208,
+      "lng": -73.9980
+    },
+    "description": "A basement poetry reading room where Allen Ginsberg first performed 'Howl' in 1955.",
+    "historical_context": "This independent bookstore has hosted every major poet and writer of the Beat Generation. The original reading chair, microphone, and guest book are still here.",
+    "average_visit_minutes": 5,
+    "accessibility": ["stairs_only", "wifi", "seating"],
+    "best_time_to_visit": "afternoon",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570"
+  },
+  {
+    "id": "loc_harbor_view_point",
+    "name": "Harbor View Overlook",
+    "categories": ["photography", "outdoor", "scenic"],
+    "coordinates": {
+      "lat": 40.7218,
+      "lng": -73.9970
+    },
+    "description": "A little-known viewpoint offering panoramic views of the harbor and skyline.",
+    "historical_context": "This elevated platform was built in 1925 as part of the city's first elevated walkway system. It offers the same view that inspired countless paintings and photographs throughout the 20th century.",
+    "average_visit_minutes": 6,
+    "accessibility": ["wheelchair_accessible", "benches", "photo_spot"],
+    "best_time_to_visit": "sunset",
+    "admission": "free",
+    "image_url": "https://images.unsplash.com/photo-1518837695005-2083093ee35b"
+  }
+]

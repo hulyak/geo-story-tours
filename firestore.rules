@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public read access to locations
+    match /locations/{location} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Tours - allow reading for demo
+    match /tours/{tour} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Default: deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
