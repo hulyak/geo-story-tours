@@ -431,7 +431,7 @@ MIT License - feel free to use for your own projects!
 - ✅ **7 Cloud Run Services**: All deployed and operational
 - ✅ **Potential Prize**: $8,000 × 2 categories = $16,000 total
 
----
+
 
 ## 🎉 Quick Commands
 
@@ -451,7 +451,3 @@ gcloud logging read "resource.labels.service_name=storytelling-agent" --limit=20
 AGENT_URL=$(gcloud run services describe storytelling-agent --region=europe-west1 --format='value(status.url)')
 curl -X POST "$AGENT_URL/process" -H "Content-Type: application/json" -d '{"input":"Generate a story"}'
 ```
-
----
-
-**Ready to win the hackathon? Let's go! 🚀**

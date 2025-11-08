@@ -2,7 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { MapPin, Clock, Music, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import { MapPin, Clock, Music, ChevronLeft, ChevronRight, Play, Pause, Download, Navigation } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { exportTour } from '../../utils/tourExport';
+import { optimizeRoute, calculateTotalDistance, formatDistance, estimateWalkingTime } from '../../utils/routeOptimization';
+
+// Dynamically import the map component (client-side only)
+const TourMap = dynamic(() => import('../../components/TourMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-xl">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-t-transparent"></div>
+        <p className="mt-2 text-gray-600 text-sm">Loading map...</p>
+      </div>
+    </div>
+  ),
+});
 
 export default function TourDetailPage() {
   const params = useParams();
@@ -13,6 +29,8 @@ export default function TourDetailPage() {
   const [loading, setLoading] = useState(true);
   const [currentStop, setCurrentStop] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isOptimized, setIsOptimized] = useState(false);
+  const [originalLocations, setOriginalLocations] = useState<any[]>([]);
 
   useEffect(() => {
     fetchTour();
@@ -25,6 +43,10 @@ export default function TourDetailPage() {
 
       if (data.success) {
         setTour(data.tour);
+        // Save original locations for restoration
+        if (data.tour.locations) {
+          setOriginalLocations([...data.tour.locations]);
+        }
       }
     } catch (error) {
       console.error('Error fetching tour:', error);
@@ -37,6 +59,29 @@ export default function TourDetailPage() {
     // Toggle audio playback
     setIsPlaying(!isPlaying);
     // TODO: Implement actual audio playback when audio URLs are available
+  };
+
+  const handleExport = (format: 'gpx' | 'kml') => {
+    if (tour && tour.locations) {
+      exportTour(tour.locations, `Tour ${tourId}`, format);
+    }
+  };
+
+  const handleOptimizeRoute = () => {
+    if (!tour || !tour.locations) return;
+
+    if (isOptimized) {
+      // Restore original route
+      setTour({ ...tour, locations: [...originalLocations] });
+      setIsOptimized(false);
+      setCurrentStop(0);
+    } else {
+      // Optimize route
+      const optimizedLocations = optimizeRoute(tour.locations);
+      setTour({ ...tour, locations: optimizedLocations });
+      setIsOptimized(true);
+      setCurrentStop(0);
+    }
   };
 
   if (loading) {
@@ -98,15 +143,72 @@ export default function TourDetailPage() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Map Section */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Tour Map</h2>
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl h-96 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-16 w-16 text-purple-600 mx-auto mb-4" />
-                <p className="text-gray-600">Interactive map coming soon!</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  {tour.locations?.length || 0} locations plotted
-                </p>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Tour Map</h2>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleOptimizeRoute}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                    isOptimized
+                      ? 'bg-orange-600 text-white hover:bg-orange-700'
+                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                  }`}
+                  title={isOptimized ? 'Restore original route' : 'Optimize route for shortest distance'}
+                >
+                  <Navigation className="h-4 w-4" />
+                  <span className="hidden sm:inline">{isOptimized ? 'Restore' : 'Optimize'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport('gpx')}
+                  className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
+                  title="Export as GPX for GPS devices"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">GPX</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport('kml')}
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  title="Export as KML for Google Earth"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">KML</span>
+                </button>
               </div>
+            </div>
+
+            {/* Route Distance Info */}
+            {tour.locations && tour.locations.length > 1 && (
+              <div className={`mb-4 p-3 rounded-lg ${isOptimized ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Total Walking Distance: {formatDistance(calculateTotalDistance(tour.locations))}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Estimated time: {estimateWalkingTime(calculateTotalDistance(tour.locations))} (walking only)
+                    </p>
+                  </div>
+                  {isOptimized && (
+                    <span className="text-green-700 text-xs font-medium bg-green-100 px-2 py-1 rounded">
+                      Optimized
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-xl h-96 overflow-hidden">
+              <TourMap
+                locations={tour.locations || []}
+                currentStop={currentStop}
+                onMarkerClick={(index) => setCurrentStop(index)}
+              />
             </div>
 
             {/* Location List */}
@@ -116,6 +218,7 @@ export default function TourDetailPage() {
                 {tour.locations?.map((location: any, index: number) => (
                   <button
                     key={location.id}
+                    type="button"
                     onClick={() => setCurrentStop(index)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       currentStop === index
@@ -148,16 +251,20 @@ export default function TourDetailPage() {
               </h2>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={() => setCurrentStop(Math.max(0, currentStop - 1))}
                   disabled={currentStop === 0}
                   className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Previous stop"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setCurrentStop(Math.min((tour.locations?.length || 1) - 1, currentStop + 1))}
                   disabled={currentStop === (tour.locations?.length || 1) - 1}
                   className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Next stop"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
@@ -227,6 +334,7 @@ export default function TourDetailPage() {
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={handlePlayAudio}
                       className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
                     >
