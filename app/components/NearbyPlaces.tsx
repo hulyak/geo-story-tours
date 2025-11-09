@@ -70,7 +70,7 @@ export default function NearbyPlaces({ lat, lng }: NearbyPlacesProps) {
             onClick={() => setSelectedType(type)}
             className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedType === type
-                ? 'bg-purple-600 text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -82,7 +82,7 @@ export default function NearbyPlaces({ lat, lng }: NearbyPlacesProps) {
       {/* Places list */}
       {loading ? (
         <div className="text-center py-3">
-          <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-t-transparent"></div>
+          <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-orange-500 border-t-transparent"></div>
         </div>
       ) : places.length > 0 ? (
         <div className="space-y-2">

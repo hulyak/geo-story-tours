@@ -4,17 +4,13 @@ Serves the Google ADK agent as a FastAPI application.
 """
 
 import os
-import uuid
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from agent import agent
-from google.adk.runners import InMemoryRunner
-from google.genai import types
 import uvicorn
 
 PORT = int(os.environ.get('PORT', 8080))
 app = FastAPI(title=agent.name)
-runner = InMemoryRunner(agent=agent)
 
 @app.get("/")
 async def root():
@@ -26,16 +22,9 @@ async def invoke_agent(request: Request):
         body = await request.json()
         prompt = body.get("prompt", "")
 
-        content = types.Content(role='user', parts=[types.Part(text=prompt)])
-        user_id = str(uuid.uuid4())
-        session_id = str(uuid.uuid4())
-
-        full_response = ""
-        async for event in runner.run_async(user_id=user_id, session_id=session_id, new_message=content):
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    full_response = event.content.parts[0].text
-                    break
+        # Use stateless invocation like other agents
+        response = await agent.run_async(prompt)
+        full_response = str(response)
 
         return JSONResponse(content={"success": True, "response": full_response})
     except Exception as e:

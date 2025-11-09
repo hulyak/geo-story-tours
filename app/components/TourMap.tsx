@@ -196,17 +196,18 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
           <Polyline
             path={path}
             options={{
-              strokeColor: '#8B5CF6',
-              strokeOpacity: 0.8,
-              strokeWeight: 4,
+              strokeColor: '#f97316',
+              strokeOpacity: 0.9,
+              strokeWeight: 5,
               geodesic: true,
               icons: window.google?.maps?.SymbolPath ? [
                 {
                   icon: {
                     path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                    scale: 3,
-                    strokeColor: '#8B5CF6',
-                    fillColor: '#8B5CF6',
+                    scale: 4,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 1,
+                    fillColor: '#f97316',
                     fillOpacity: 1,
                   },
                   offset: '100%',
@@ -223,15 +224,14 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
 
           const isCurrentStop = index === currentStop;
           const isPastStop = index < currentStop;
-          const isFutureStop = index > currentStop;
 
           const emoji = getMarkerIcon(location.categories);
-          const markerColor = isCurrentStop ? '#8B5CF6' : isPastStop ? '#10B981' : '#D1D5DB';
+          const markerColor = isCurrentStop ? '#f97316' : isPastStop ? '#10B981' : '#D1D5DB';
           const markerScale = isCurrentStop ? 1.2 : 1;
 
           return (
             <Marker
-              key={location.id}
+              key={location.id || `marker-${index}`}
               position={{
                 lat: location.coordinates.lat,
                 lng: location.coordinates.lng,
@@ -277,7 +277,7 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
                     selectedMarker === currentStop
-                      ? 'bg-purple-600'
+                      ? 'bg-orange-500'
                       : selectedMarker < currentStop
                       ? 'bg-green-600'
                       : 'bg-gray-400'
@@ -291,7 +291,7 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
                   </h3>
                   <p className={`text-xs font-medium mt-1 ${
                     selectedMarker === currentStop
-                      ? 'text-purple-600'
+                      ? 'text-orange-500'
                       : selectedMarker < currentStop
                       ? 'text-green-600'
                       : 'text-gray-500'

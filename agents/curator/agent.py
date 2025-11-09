@@ -8,6 +8,7 @@ from google.adk.agents.llm_agent import Agent
 from google.cloud import firestore, pubsub_v1
 import os
 import json
+import random
 from datetime import datetime
 from typing import Dict, List, Any
 
@@ -43,10 +44,13 @@ def query_locations_tool(interests: List[str], max_locations: int = 8) -> str:
             if any(interest in location_categories for interest in interests):
                 matching.append(location)
 
-        # Sort by relevance and limit
+        # Sort by relevance with randomization for diversity
         def relevance_score(loc):
             categories = loc.get('categories', [])
-            return sum(2 if cat in interests else 1 for cat in categories)
+            base_score = sum(2 if cat in interests else 1 for cat in categories)
+            # Add randomness (10-30% variation) to create diverse tours
+            diversity_factor = random.uniform(0.7, 1.3)
+            return base_score * diversity_factor
 
         matching.sort(key=relevance_score, reverse=True)
         selected = matching[:max_locations]

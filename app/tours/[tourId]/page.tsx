@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { MapPin, Clock, Music, ChevronLeft, ChevronRight, Play, Pause, Download, Navigation } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -32,6 +32,8 @@ export default function TourDetailPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOptimized, setIsOptimized] = useState(false);
   const [originalLocations, setOriginalLocations] = useState<any[]>([]);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     fetchTour();
@@ -57,10 +59,54 @@ export default function TourDetailPage() {
   };
 
   const handlePlayAudio = () => {
-    // Toggle audio playback
-    setIsPlaying(!isPlaying);
-    // TODO: Implement actual audio playback when audio URLs are available
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().catch(error => {
+        console.error('Error playing audio:', error);
+        alert('Audio playback failed. The audio file may not be ready yet.');
+      });
+      setIsPlaying(true);
+    }
   };
+
+  // Reset audio when changing stops
+  useEffect(() => {
+    setIsPlaying(false);
+    setAudioProgress(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [currentStop]);
+
+  // Update audio progress
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateProgress = () => {
+      if (audio.duration) {
+        setAudioProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setAudioProgress(0);
+    };
+
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   const handleExport = (format: 'gpx' | 'kml') => {
     if (tour && tour.locations) {
@@ -326,18 +372,26 @@ export default function TourDetailPage() {
 
                 {/* Audio Player */}
                 <div className="bg-gradient-to-r from-orange-500 to-rose-500 rounded-lg p-6 text-white">
+                  {currentLocation.audio_url && (
+                    <audio
+                      ref={audioRef}
+                      src={currentLocation.audio_url}
+                      preload="metadata"
+                    />
+                  )}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <Music className="h-6 w-6" />
                       <div>
                         <p className="font-bold">Audio Guide</p>
-                        <p className="text-sm text-white/80">AI-generated narration</p>
+                        <p className="text-sm text-white/80">AI-generated narration (90 seconds)</p>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={handlePlayAudio}
-                      className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                      disabled={!currentLocation.audio_url}
+                      className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isPlaying ? (
                         <Pause className="h-6 w-6" />
@@ -347,24 +401,27 @@ export default function TourDetailPage() {
                     </button>
                   </div>
                   <div className="bg-white/20 rounded-full h-2">
-                    <div className="bg-white rounded-full h-2 w-0"></div>
+                    <div
+                      className="bg-white rounded-full h-2 transition-all duration-300"
+                      style={{ width: `${audioProgress}%` }}
+                    ></div>
                   </div>
                   <p className="text-sm text-white/80 mt-2">
-                    {currentLocation.audio_url ? 'Ready to play' : 'Audio processing...'}
+                    {currentLocation.audio_url ? (isPlaying ? 'Playing...' : 'Ready to play') : 'Audio processing...'}
                   </p>
                 </div>
 
-                {/* Directions */}
+                {/* Navigation */}
                 {currentLocation.coordinates && (
                   <div className="mt-6">
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${currentLocation.coordinates.lat},${currentLocation.coordinates.lng}`}
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${currentLocation.coordinates.lat},${currentLocation.coordinates.lng}&travelmode=walking`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                      className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
                     >
-                      <MapPin className="h-5 w-5" />
-                      Get Directions
+                      <Navigation className="h-5 w-5" />
+                      Start Walking Navigation
                     </a>
                   </div>
                 )}
