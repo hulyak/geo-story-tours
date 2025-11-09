@@ -14,7 +14,7 @@ const TourMap = dynamic(() => import('../../components/TourMap'), {
   loading: () => (
     <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-xl">
       <div className="text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-t-transparent"></div>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent"></div>
         <p className="mt-2 text-gray-600 text-sm">Loading map...</p>
       </div>
     </div>
@@ -89,7 +89,7 @@ export default function TourDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent"></div>
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent"></div>
           <p className="mt-4 text-gray-600 text-lg">Loading your tour...</p>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function TourDetailPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Tour not found</h1>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-lg hover:shadow-lg transition-all"
           >
             Back to Home
           </button>
@@ -117,7 +117,7 @@ export default function TourDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-6">
+      <div className="bg-gradient-to-r from-orange-500 to-rose-500 text-white py-6">
         <div className="max-w-7xl mx-auto px-4">
           <button
             onClick={() => router.push('/')}
@@ -154,8 +154,8 @@ export default function TourDetailPage() {
                   onClick={handleOptimizeRoute}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                     isOptimized
-                      ? 'bg-orange-600 text-white hover:bg-orange-700'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-orange-600 text-white hover:bg-orange-700'
                   }`}
                   title={isOptimized ? 'Restore original route' : 'Optimize route for shortest distance'}
                 >
@@ -223,13 +223,13 @@ export default function TourDetailPage() {
                     onClick={() => setCurrentStop(index)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       currentStop === index
-                        ? 'bg-purple-100 border-2 border-purple-600'
+                        ? 'bg-orange-100 border-2 border-orange-600'
                         : 'bg-gray-50 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        currentStop === index ? 'bg-purple-600 text-white' : 'bg-gray-300 text-gray-600'
+                        currentStop === index ? 'bg-orange-500 text-white' : 'bg-gray-300 text-gray-600'
                       }`}>
                         {index + 1}
                       </div>
@@ -274,7 +274,7 @@ export default function TourDetailPage() {
 
             {currentLocation && (
               <>
-                <h3 className="text-2xl font-bold text-purple-600 mb-4">
+                <h3 className="text-2xl font-bold text-orange-500 mb-4">
                   {currentLocation.name}
                 </h3>
 
@@ -283,7 +283,7 @@ export default function TourDetailPage() {
                     {currentLocation.categories?.map((cat: string) => (
                       <span
                         key={cat}
-                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium"
+                        className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium"
                       >
                         {cat}
                       </span>
@@ -297,9 +297,9 @@ export default function TourDetailPage() {
                     </div>
                     {currentLocation.coordinates && (
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-purple-600" />
+                        <MapPin className="h-5 w-5 text-orange-500" />
                         <span className="text-sm">
-                          {currentLocation.city || 'New York'}, {currentLocation.country || 'USA'}
+                          {currentLocation.city || 'Paris'}, {currentLocation.country || 'France'}
                         </span>
                       </div>
                     )}
@@ -316,7 +316,7 @@ export default function TourDetailPage() {
                 {currentLocation.story && (
                   <div className="mb-6">
                     <h4 className="font-bold text-gray-900 mb-2">Story</h4>
-                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-4">
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4">
                       <p className="text-gray-700 leading-relaxed">
                         {currentLocation.story}
                       </p>
@@ -325,7 +325,7 @@ export default function TourDetailPage() {
                 )}
 
                 {/* Audio Player */}
-                <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white">
+                <div className="bg-gradient-to-r from-orange-500 to-rose-500 rounded-lg p-6 text-white">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <Music className="h-6 w-6" />

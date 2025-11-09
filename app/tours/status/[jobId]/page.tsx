@@ -97,7 +97,7 @@ export default function TourStatusPage() {
       case 'completed':
         return <CheckCircle2 className="h-6 w-6 text-green-600" />;
       case 'running':
-        return <Loader2 className="h-6 w-6 text-purple-600 animate-spin" />;
+        return <Loader2 className="h-6 w-6 text-orange-500 animate-spin" />;
       case 'failed':
         return <XCircle className="h-6 w-6 text-red-600" />;
       default:
@@ -109,9 +109,9 @@ export default function TourStatusPage() {
   const overallProgress = (completedCount / agents.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-8">
+      <div className="bg-gradient-to-r from-orange-500 to-rose-500 text-white py-8">
         <div className="max-w-4xl mx-auto px-4">
           <button
             onClick={() => router.push('/')}
@@ -138,7 +138,7 @@ export default function TourStatusPage() {
             </h2>
             {overallStatus === 'processing' && (
               <div className="text-right">
-                <div className="text-3xl font-bold text-purple-600">{completedCount}/{agents.length}</div>
+                <div className="text-3xl font-bold text-orange-500">{completedCount}/{agents.length}</div>
                 <div className="text-sm text-gray-500">Agents Complete</div>
               </div>
             )}
@@ -148,7 +148,7 @@ export default function TourStatusPage() {
           <div className="mb-6">
             <div className="bg-gray-200 rounded-full h-4 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-purple-600 to-blue-600 h-full transition-all duration-500 ease-out"
+                className="bg-gradient-to-r from-orange-500 to-rose-500 h-full transition-all duration-500 ease-out"
                 style={{ width: `${overallProgress}%` }}
               ></div>
             </div>
@@ -189,13 +189,13 @@ export default function TourStatusPage() {
             <div
               key={index}
               className={`bg-white rounded-xl shadow-lg p-6 transition-all ${
-                agent.status === 'running' ? 'ring-2 ring-purple-600 ring-offset-2' : ''
+                agent.status === 'running' ? 'ring-2 ring-orange-600 ring-offset-2' : ''
               }`}
             >
               <div className="flex items-start gap-4">
                 {/* Icon */}
                 <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl flex items-center justify-center text-3xl">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center text-3xl">
                     {agent.icon}
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function TourStatusPage() {
                       <span className="text-sm text-green-600 font-medium">✓ Completed</span>
                     )}
                     {agent.status === 'running' && (
-                      <span className="text-sm text-purple-600 font-medium animate-pulse">
+                      <span className="text-sm text-orange-500 font-medium animate-pulse">
                         ● Working now...
                       </span>
                     )}
@@ -239,7 +239,7 @@ export default function TourStatusPage() {
 
         {/* Fun Facts Section */}
         {overallStatus === 'processing' && (
-          <div className="mt-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
+          <div className="mt-8 bg-gradient-to-r from-orange-500 to-rose-500 rounded-2xl p-6 text-white">
             <h3 className="font-bold text-xl mb-2">💡 Did you know?</h3>
             <p className="text-white/90">
               Our AI agents process over 50+ data points per location to create personalized tours

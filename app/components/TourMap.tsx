@@ -112,7 +112,7 @@ function createCustomMarker(
 
 export default function TourMap({ locations, currentStop, onMarkerClick }: TourMapProps) {
   const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
-  const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 });
+  const [center, setCenter] = useState({ lat: 48.8566, lng: 2.3522 }); // Paris coordinates
   const [zoom, setZoom] = useState(14);
   const mapRef = useRef<any>(null);
 
@@ -200,17 +200,19 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
               strokeOpacity: 0.8,
               strokeWeight: 4,
               geodesic: true,
-              icons: [
+              icons: window.google?.maps?.SymbolPath ? [
                 {
                   icon: {
-                    path: window.google?.maps?.SymbolPath?.FORWARD_CLOSED_ARROW,
+                    path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                     scale: 3,
                     strokeColor: '#8B5CF6',
+                    fillColor: '#8B5CF6',
+                    fillOpacity: 1,
                   },
                   offset: '100%',
                   repeat: '150px',
                 },
-              ],
+              ] : undefined,
             }}
           />
         )}

@@ -155,7 +155,7 @@ export default function TourRating({ tourId }: TourRatingProps) {
           onChange={(e) => setFeedback(e.target.value)}
           placeholder="Tell us what you liked or what could be improved..."
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent resize-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
         />
         <p className="mt-2 text-sm text-gray-500">
           {feedback.length}/500 characters
