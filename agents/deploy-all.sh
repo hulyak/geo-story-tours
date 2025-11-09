@@ -5,7 +5,7 @@
 
 set -e
 
-PROJECT_ID="quickcast-477213"
+PROJECT_ID="durable-torus-477513-g3"
 REGION="europe-west1"
 
 echo "🚀 Deploying Geo-Story AI Agents to Cloud Run..."

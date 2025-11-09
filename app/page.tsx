@@ -12,11 +12,17 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   const categories = ['all', 'history', 'food', 'art', 'hidden gems', 'architecture', 'landmarks'];
 
   useEffect(() => {
     fetchLocations();
+    // Load favorites from localStorage
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
   }, []);
 
   const fetchLocations = async () => {
@@ -41,6 +47,36 @@ export default function Home() {
     }
   };
 
+  const toggleFavorite = (locationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newFavorites = favorites.includes(locationId)
+      ? favorites.filter(id => id !== locationId)
+      : [...favorites, locationId];
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+  };
+
+  const handleShare = async (location: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareData = {
+      title: location.name,
+      text: location.description,
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(`${location.name}\n${location.description}\n${window.location.href}`);
+        alert('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
+
   const handleSearch = (value: string) => {
     setSearchQuery(value);
     // Only auto-scroll once when user starts typing (3+ characters)
@@ -60,6 +96,10 @@ export default function Home() {
     setCreatingTour(true);
 
     try {
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
       const response = await fetch('https://tour-orchestrator-168041541697.europe-west1.run.app/create-tour-async', {
         method: 'POST',
         headers: {
@@ -68,8 +108,15 @@ export default function Home() {
         body: JSON.stringify({
           interests: interests || [selectedCategory === 'all' ? 'history' : selectedCategory],
           duration: 30
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -77,12 +124,21 @@ export default function Home() {
         router.push(`/tours/status/${data.job_id}`);
       } else {
         setCreatingTour(false);
-        alert('Error creating tour. Please try again.');
+        alert('Error creating tour: ' + (data.message || 'Unknown error. Please try again.'));
       }
     } catch (error) {
       console.error('Error creating tour:', error);
       setCreatingTour(false);
-      alert('Error creating tour. Please try again.');
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          alert('Request timed out. The service might be starting up. Please try again in a moment.');
+        } else {
+          alert('Error creating tour: ' + error.message + '. Please try again.');
+        }
+      } else {
+        alert('Error creating tour. Please try again.');
+      }
     }
   };
 
@@ -283,8 +339,11 @@ export default function Home() {
                         className="h-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700"
                         style={{ backgroundImage: `url(${location.image_url})` }}
                       />
-                      <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-lg">
-                        <Heart className="h-5 w-5 text-gray-600 hover:text-red-500 hover:fill-red-500 transition" />
+                      <button
+                        onClick={(e) => toggleFavorite(location.id, e)}
+                        className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-lg"
+                      >
+                        <Heart className={`h-5 w-5 transition ${favorites.includes(location.id) ? 'text-red-500 fill-red-500' : 'text-gray-600 hover:text-red-500'}`} />
                       </button>
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                         <div className="flex items-center gap-2 text-white text-sm">
@@ -345,10 +404,16 @@ export default function Home() {
                 <X className="h-6 w-6 text-gray-700" />
               </button>
               <div className="absolute top-4 left-4 flex gap-2">
-                <button className="p-3 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-xl">
-                  <Heart className="h-6 w-6 text-gray-700" />
+                <button
+                  onClick={(e) => toggleFavorite(selectedLocation.id, e)}
+                  className="p-3 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-xl"
+                >
+                  <Heart className={`h-6 w-6 transition ${favorites.includes(selectedLocation.id) ? 'text-red-500 fill-red-500' : 'text-gray-700'}`} />
                 </button>
-                <button className="p-3 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-xl">
+                <button
+                  onClick={(e) => handleShare(selectedLocation, e)}
+                  className="p-3 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-xl"
+                >
                   <Share2 className="h-6 w-6 text-gray-700" />
                 </button>
               </div>

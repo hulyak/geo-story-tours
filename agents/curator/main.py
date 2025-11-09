@@ -8,7 +8,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from agent import agent
 import uvicorn
-from google.adk.messages import UserMessage
 
 # Get port from environment
 PORT = int(os.environ.get('PORT', 8080))
@@ -28,31 +27,17 @@ async def root():
 
 @app.post("/invoke")
 async def invoke_agent(request: Request):
-    """Invoke the agent with a prompt"""
+    """Invoke the agent with a prompt (stateless, no session history)"""
     try:
         body = await request.json()
         prompt = body.get("prompt", "")
 
-        # Create a UserMessage as required by ADK
-        messages = [UserMessage(content=prompt)]
+        # For stateless single-shot requests, invoke agent directly
+        # No session management needed for one-off requests
+        response = await agent.run_async(prompt)
 
-        # Invoke the agent - it returns an async generator
-        full_response = ""
-        async for event in agent.run_async(messages):
-            # Accumulate response from events
-            if hasattr(event, 'text'):
-                full_response += event.text
-            elif hasattr(event, 'content'):
-                if isinstance(event.content, str):
-                    full_response += event.content
-                elif hasattr(event.content, 'text'):
-                    full_response += event.content.text
-                elif hasattr(event.content, 'parts') and event.content.parts:
-                    for part in event.content.parts:
-                        if hasattr(part, 'text'):
-                            full_response += part.text
-            else:
-                full_response += str(event)
+        # Extract text from response
+        full_response = str(response)
 
         return JSONResponse(content={
             "success": True,

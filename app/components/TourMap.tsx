@@ -114,20 +114,20 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
   const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
   const [center, setCenter] = useState({ lat: 40.7128, lng: -74.006 });
   const [zoom, setZoom] = useState(14);
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const mapRef = useRef<any>(null);
 
   // Use a public API key for demo purposes (you should replace this with your own)
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
   // Handle map load
-  const onMapLoad = useCallback((map: google.maps.Map) => {
+  const onMapLoad = useCallback((map: any) => {
     mapRef.current = map;
   }, []);
 
   // Auto-fit bounds to show all markers
   useEffect(() => {
-    if (mapRef.current && locations && locations.length > 0) {
-      const bounds = new google.maps.LatLngBounds();
+    if (mapRef.current && locations && locations.length > 0 && window.google?.maps) {
+      const bounds = new window.google.maps.LatLngBounds();
 
       locations.forEach((location) => {
         if (location.coordinates) {
@@ -241,12 +241,12 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
                 fontSize: '12px',
                 className: 'marker-label',
               }}
-              icon={{
+              icon={window.google?.maps ? {
                 url: createCustomMarker(emoji, markerColor, markerScale),
-                scaledSize: new google.maps.Size(40 * markerScale, 52 * markerScale),
-                anchor: new google.maps.Point(20 * markerScale, 52 * markerScale),
-                labelOrigin: new google.maps.Point(20 * markerScale, 20 * markerScale),
-              }}
+                scaledSize: new window.google.maps.Size(40 * markerScale, 52 * markerScale),
+                anchor: new window.google.maps.Point(20 * markerScale, 52 * markerScale),
+                labelOrigin: new window.google.maps.Point(20 * markerScale, 20 * markerScale),
+              } : undefined}
               animation={isCurrentStop ? window.google?.maps?.Animation?.BOUNCE : undefined}
               onClick={() => {
                 setSelectedMarker(index);
@@ -266,9 +266,9 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
               lng: locations[selectedMarker].coordinates.lng,
             }}
             onCloseClick={() => setSelectedMarker(null)}
-            options={{
-              pixelOffset: new google.maps.Size(0, -10),
-            }}
+            options={window.google?.maps ? {
+              pixelOffset: new window.google.maps.Size(0, -10),
+            } : {}}
           >
             <div className="p-3 max-w-xs">
               <div className="flex items-start gap-2 mb-2">
