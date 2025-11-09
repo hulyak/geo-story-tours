@@ -1,0 +1,85 @@
+flowchart TD
+    User["👤 User/Browser"]
+
+    Frontend["☁️ Cloud Run: Frontend<br/>Next.js 15<br/>geo-story-frontend...run.app"]
+
+    Orchestrator["🎯 Tour Orchestrator<br/>FastAPI<br/>tour-orchestrator...run.app"]
+
+    Agent1["🔍 Curator Agent<br/>Selects 5-8 locations<br/>based on preferences"]
+
+    Agent2["🗺️ Route Optimizer<br/>Calculates optimal path<br/>Haversine distance"]
+
+    Agent3["✍️ Storyteller Agent<br/>Generates 90-sec narratives<br/>Gemini 2.5 Flash"]
+
+    Agent4["✅ Moderator Agent<br/>Quality & content check<br/>Ensures appropriateness"]
+
+    Agent5["🎙️ Voice Synthesis Agent<br/>L4 GPU | 16Gi | 4 CPUs<br/>Stories → Audio"]
+
+    Tasks["📋 Cloud Tasks<br/>tour-creation-queue<br/>Async job queue"]
+
+    PubSub1["📢 Pub/Sub<br/>tour-voice-synthesis<br/>Voice generation events"]
+    PubSub2["📢 Pub/Sub<br/>story-regeneration<br/>Content improvement"]
+    PubSub3["📢 Pub/Sub<br/>content-moderation<br/>Quality review"]
+
+    Worker1["⚙️ Analytics Worker<br/>Cloud Run Job<br/>Daily aggregation | 1GB RAM"]
+
+    Worker2["⚙️ Voice Synthesis Worker<br/>Cloud Run Job<br/>Every 5min | L4 GPU | 16GB RAM"]
+
+    Scheduler["⏰ Cloud Scheduler<br/>2 Cron Jobs<br/>analytics + voice-synthesis"]
+
+    Storage["💾 Cloud Storage<br/>Audio files<br/>Tour exports (GPX/KML)"]
+
+    Firestore["🗄️ Firestore<br/>Locations, Tours<br/>Analytics, Feedback"]
+
+    GCP["☁️ Google Cloud<br/>━━━━━━━━━━━<br/>🔊 Text-to-Speech<br/>🔐 Secret Manager<br/>🤖 Gemini 2.5 Flash"]
+
+    User -->|"Browse / Create tour"| Frontend
+    Frontend -->|"POST /create-tour"| Orchestrator
+    Orchestrator -->|"Enqueue job"| Tasks
+    Tasks -->|"Process tour"| Orchestrator
+    Orchestrator -->|"Query locations"| Agent1
+    Agent1 -->|"Selected locations"| Agent2
+    Agent2 -->|"Optimized route"| Agent3
+    Agent3 -->|"Generated stories"| Agent4
+    Agent4 -->|"Approved content"| Agent5
+    Agent5 -->|"Publish event"| PubSub1
+    PubSub1 -->|"Trigger batch"| Worker2
+    Worker2 -->|"Generate audio"| Agent5
+    Agent5 -->|"Store audio"| Storage
+    Agent4 -.->|"Low rating"| PubSub2
+    PubSub2 -.->|"Regenerate"| Agent3
+    Agent4 -.->|"Flag content"| PubSub3
+    Orchestrator -->|"Complete tour"| Frontend
+    Frontend -->|"Tour with audio"| User
+
+    Scheduler -->|"Daily 00:00 UTC"| Worker1
+    Scheduler -->|"Every 5 minutes"| Worker2
+    Worker1 -->|"Aggregate data"| Firestore
+
+    Agent1 <-->|"Read/Write"| Firestore
+    Orchestrator <-->|"Store/Read tours"| Firestore
+    Frontend <-->|"Read tours/feedback"| Firestore
+    Storage -->|"Serve audio"| Frontend
+
+    Agent3 -.->|"Gemini API"| GCP
+    Agent4 -.->|"Gemini API"| GCP
+    Agent5 -.->|"TTS API"| GCP
+
+    style User fill:#4A90E2,color:#fff
+    style Frontend fill:#FF6B6B,color:#fff
+    style Orchestrator fill:#FFA500,color:#fff
+    style Agent1 fill:#9B59B6,color:#fff
+    style Agent2 fill:#3498DB,color:#fff
+    style Agent3 fill:#1ABC9C,color:#fff
+    style Agent4 fill:#F39C12,color:#fff
+    style Agent5 fill:#E74C3C,color:#fff
+    style Tasks fill:#E67E22,color:#fff
+    style PubSub1 fill:#D35400,color:#fff
+    style PubSub2 fill:#D35400,color:#fff
+    style PubSub3 fill:#D35400,color:#fff
+    style Worker1 fill:#16A085,color:#fff
+    style Worker2 fill:#16A085,color:#fff
+    style Scheduler fill:#8E44AD,color:#fff
+    style Storage fill:#34495E,color:#fff
+    style Firestore fill:#2C3E50,color:#fff
+    style GCP fill:#7F8C8D,color:#fff

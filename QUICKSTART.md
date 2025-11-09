@@ -2,18 +2,6 @@
 
 Get the app running in **30 minutes**!
 
----
-
-## ✅ What's Fixed
-
-All 4 AI agents now use **proper Google ADK**:
-- ✅ `agents/curator/agent.py` - Tour Curator Agent
-- ✅ `agents/optimizer/agent.py` - Route Optimizer Agent
-- ✅ `agents/storyteller/adk_agent.py` - Storytelling Agent
-- ✅ `agents/moderator/agent.py` - Content Moderator Agent
-
----
-
 ## 📋 Prerequisites
 
 1. **Google Cloud Account** with billing enabled
@@ -99,7 +87,7 @@ gcloud secrets add-iam-policy-binding gemini-api-key \
 ### Step 6: Deploy Frontend (5 min)
 
 ```bash
-cd /Users/hulyakarakaya/Desktop/cloud\ run/geo-story-tours
+cd geo-story-tours
 
 # Deploy Next.js app
 gcloud run deploy geo-story-frontend \
@@ -307,21 +295,6 @@ Once everything works:
 
 4. **Add Voiceover** using `DEMO_VIDEO_SCRIPT.md`
 
----
-
-## 🏆 Hackathon Submission Checklist
-
-- [ ] All 4 agents deployed ✅
-- [ ] Frontend accessible ✅
-- [ ] Mock data uploaded ✅
-- [ ] Architecture diagram created
-- [ ] Demo video recorded (3 min)
-- [ ] Blog post written
-- [ ] GitHub repo public
-- [ ] Submit to hackathon platform!
-
----
-
 ## 🐛 Common Errors & Fixes
 
 ### Error: "Module 'google.adk' has no attribute 'agents'"
@@ -364,9 +337,7 @@ gcloud run services update storytelling-agent \
 1. **Test Agent Communication**: Trigger a tour creation and watch Pub/Sub messages flow
 2. **Add Google Maps**: Integrate Maps API for tour visualization
 3. **Polish UI**: Improve homepage design
-4. **Record Demo**: Follow `DEMO_VIDEO_SCRIPT.md`
-5. **Write Blog Post**: Explain your multi-agent architecture
-6. **Submit to Hackathon**: Win! 🏆
+4. **Write Blog Post**: Explain your multi-agent architecture
 
 ---
 
@@ -391,14 +362,3 @@ gcloud run services delete SERVICE_NAME --region=europe-west1
 ```
 
 ---
-
-## 🎉 You're Done!
-
-**App is live!** Visit your frontend URL and start exploring tours.
-
-**Questions?** Check:
-- `HACKATHON_PLAN.md` for strategy
-- `agents/MIGRATION_TO_ADK.md` for ADK details
-- `DEMO_VIDEO_SCRIPT.md` for recording guide
-
-**Good luck with the hackathon! 🚀**

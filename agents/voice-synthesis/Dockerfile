@@ -1,11 +1,5 @@
-# Use NVIDIA CUDA base image for GPU support
-FROM nvidia/cuda:12.6.2-runtime-ubuntu24.04
-
-# Install Python
-RUN apt-get update && apt-get install -y \
-    python3.12 \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+# Use standard Python base image
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
@@ -14,7 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip3 install --break-system-packages --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy agent code
 COPY agent.py .

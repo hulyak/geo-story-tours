@@ -122,7 +122,7 @@ Target: ~225 words
 
 ---
 
-## 🔄 Agent Communication Flow
+## Agent Communication Flow
 
 ```
 User Request
@@ -362,33 +362,6 @@ with ThreadPoolExecutor(max_workers=3) as executor:
 gcloud run services update storytelling-agent --min-instances=1
 ```
 
----
-
-## 🏆 Hackathon Demo Tips
-
-### Show Agent Orchestration
-
-1. **Open Cloud Console**: Pub/Sub → Topics
-2. **Trigger a tour**: `curl -X POST $CURATOR_URL/curate ...`
-3. **Watch messages flow**:
-   - `route-planned` → message appears
-   - `route-optimized` → message appears
-   - `stories-generated` → message appears
-4. **Show Firestore**: Document updates in real-time
-
-### Demo Script
-
-"Here's what makes this special. Watch as 4 AI agents collaborate:
-
-1. **Tour Curator** analyzes your preferences with Gemini
-2. **Route Optimizer** calculates the perfect walking path
-3. **Storytelling Agent** uses Gemini to write 6 unique 90-second stories
-4. **Content Moderator** validates everything is accurate and appropriate
-
-All happening in real-time, fully serverless on Cloud Run, communicating through Pub/Sub. This is true multi-agent AI."
-
----
-
 ## 📚 Additional Resources
 
 - [Agent Development Kit Docs](https://cloud.google.com/agent-development-kit)
@@ -396,17 +369,3 @@ All happening in real-time, fully serverless on Cloud Run, communicating through
 - [Cloud Run Documentation](https://cloud.google.com/run/docs)
 - [Pub/Sub Best Practices](https://cloud.google.com/pubsub/docs/best-practices)
 
----
-
-## 🤝 Contributing
-
-Found a bug or want to improve an agent? PRs welcome!
-
-1. Fork the repo
-2. Create your feature branch
-3. Test locally
-4. Submit PR with clear description
-
----
-
-**Built for Cloud Run Hackathon 2025 - AI Agents Category** 🏆

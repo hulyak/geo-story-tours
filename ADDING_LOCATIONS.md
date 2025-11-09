@@ -99,7 +99,7 @@ Edit `/seed-data/locations.json` and add your new locations:
 ### Step 2: Upload via Script
 
 ```bash
-cd /Users/hulyakarakaya/Desktop/cloud\ run/geo-story-tours/seed-data
+cd /seed-data
 
 # Run the upload script
 ./upload-via-rest.sh
@@ -366,6 +366,4 @@ Planned features for location management:
 - [ ] Location verification workflow
 - [ ] User-submitted locations (moderated)
 
----
 
-**Ready to expand your tours to new cities!** 🗺️

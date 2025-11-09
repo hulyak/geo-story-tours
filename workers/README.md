@@ -219,7 +219,6 @@ Voice synthesis worker requires L4 GPU in us-central1. If unavailable:
 
 ## References
 
-- [JOBS_AND_WORKERS.md](../JOBS_AND_WORKERS.md) - Full specifications
 - [Cloud Run Jobs Docs](https://cloud.google.com/run/docs/create-jobs)
 - [Cloud Scheduler Docs](https://cloud.google.com/scheduler/docs)
 - [Cloud Tasks Docs](https://cloud.google.com/tasks/docs)

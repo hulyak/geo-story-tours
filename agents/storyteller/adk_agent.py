@@ -1,8 +1,5 @@
 """
 ADK Storytelling Agent - Proper Google ADK Implementation
-
-This uses the official google-adk package to create a proper agent
-that satisfies hackathon requirements.
 """
 
 from google.adk.agents.llm_agent import Agent

@@ -24,7 +24,7 @@ CURATOR_URL = "https://tour-curator-agent-168041541697.europe-west1.run.app"
 OPTIMIZER_URL = "https://route-optimizer-agent-168041541697.europe-west1.run.app"
 STORYTELLER_URL = "https://storytelling-agent-168041541697.europe-west1.run.app"
 MODERATOR_URL = "https://content-moderator-agent-168041541697.europe-west1.run.app"
-VOICE_SYNTHESIS_URL = "https://voice-synthesis-agent-168041541697.us-central1.run.app"
+VOICE_SYNTHESIS_URL = "https://voice-synthesis-agent-168041541697.europe-west1.run.app"
 
 # Initialize Firestore
 db = firestore.Client(project=PROJECT_ID)

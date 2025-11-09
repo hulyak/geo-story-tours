@@ -127,24 +127,31 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
   // Auto-fit bounds to show all markers
   useEffect(() => {
     if (mapRef.current && locations && locations.length > 0 && window.google?.maps) {
+      const validLocations = locations.filter(loc => loc.coordinates);
+
+      if (validLocations.length === 0) return;
+
       const bounds = new window.google.maps.LatLngBounds();
 
-      locations.forEach((location) => {
-        if (location.coordinates) {
-          bounds.extend({
-            lat: location.coordinates.lat,
-            lng: location.coordinates.lng,
-          });
-        }
+      validLocations.forEach((location) => {
+        bounds.extend({
+          lat: location.coordinates.lat,
+          lng: location.coordinates.lng,
+        });
       });
 
-      // Fit the map to show all markers with padding
-      mapRef.current.fitBounds(bounds, {
-        top: 50,
-        bottom: 50,
-        left: 50,
-        right: 50,
-      });
+      // Small delay to ensure map is fully loaded
+      setTimeout(() => {
+        if (mapRef.current) {
+          // Fit the map to show all markers with padding
+          mapRef.current.fitBounds(bounds, {
+            top: 50,
+            bottom: 50,
+            left: 50,
+            right: 50,
+          });
+        }
+      }, 100);
     }
   }, [locations]);
 

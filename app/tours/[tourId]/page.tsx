@@ -73,20 +73,18 @@ export default function TourDetailPage() {
     }
   };
 
-  // Reset audio when changing stops
+  // Reset audio and setup listeners when changing stops
   useEffect(() => {
     setIsPlaying(false);
     setAudioProgress(0);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  }, [currentStop]);
 
-  // Update audio progress
-  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
+    // Reset audio
+    audio.pause();
+    audio.currentTime = 0;
+    audio.load(); // Reload the new source
 
     const updateProgress = () => {
       if (audio.duration) {
@@ -99,14 +97,22 @@ export default function TourDetailPage() {
       setAudioProgress(0);
     };
 
+    const handleError = (e: Event) => {
+      console.error('Audio error:', e);
+      setIsPlaying(false);
+    };
+
+    // Add event listeners
     audio.addEventListener('timeupdate', updateProgress);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
     };
-  }, []);
+  }, [currentStop]);
 
   const handleExport = (format: 'gpx' | 'kml') => {
     if (tour && tour.locations) {
@@ -301,19 +307,19 @@ export default function TourDetailPage() {
                   type="button"
                   onClick={() => setCurrentStop(Math.max(0, currentStop - 1))}
                   disabled={currentStop === 0}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 transition-colors"
                   title="Previous stop"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-6 w-6" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setCurrentStop(Math.min((tour.locations?.length || 1) - 1, currentStop + 1))}
                   disabled={currentStop === (tour.locations?.length || 1) - 1}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 transition-colors"
                   title="Next stop"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-6 w-6" />
                 </button>
               </div>
             </div>
