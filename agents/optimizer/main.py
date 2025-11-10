@@ -16,7 +16,7 @@ PORT = int(os.environ.get('PORT', 8080))
 app = FastAPI(title=agent.name)
 
 # Create a runner for the agent
-runner = InMemoryRunner(agent=agent)
+# REMOVED: runner = InMemoryRunner(agent=agent)
 
 @app.get("/")
 async def root():
@@ -28,14 +28,17 @@ async def invoke_agent(request: Request):
         body = await request.json()
         prompt = body.get("prompt", "")
 
-        # Create unique session IDs for stateless execution
+        # Create unique user ID and session ID for this request
         user_id = f"user_{uuid.uuid4().hex[:8]}"
         session_id = f"session_{uuid.uuid4().hex[:8]}"
 
         # Create message content
         content = types.Content(role='user', parts=[types.Part(text=prompt)])
 
-        # Use runner to invoke agent
+        # Create a fresh runner for each request to avoid session conflicts
+        runner = InMemoryRunner(agent=agent)
+
+        # Use runner to invoke agent with explicit session_id
         full_response = ""
         async for event in runner.run_async(
             user_id=user_id,

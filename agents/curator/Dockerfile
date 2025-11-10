@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY *.py .
+COPY *.py ./
 
 # Set environment variables
 ENV PORT=8080

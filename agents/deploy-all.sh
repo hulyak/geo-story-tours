@@ -26,7 +26,8 @@ gcloud run deploy tour-curator-agent \
   --memory=1Gi \
   --cpu=1 \
   --min-instances=0 \
-  --max-instances=10
+  --max-instances=10 \
+  --clear-base-image
 
 echo "✅ Tour Curator Agent deployed!"
 echo ""
@@ -41,7 +42,8 @@ gcloud run deploy route-optimizer-agent \
   --memory=512Mi \
   --cpu=1 \
   --min-instances=0 \
-  --max-instances=10
+  --max-instances=10 \
+  --clear-base-image
 
 echo "✅ Route Optimizer Agent deployed!"
 echo ""
@@ -56,7 +58,8 @@ gcloud run deploy storytelling-agent \
   --memory=1Gi \
   --cpu=2 \
   --min-instances=0 \
-  --max-instances=5
+  --max-instances=5 \
+  --clear-base-image
 
 echo "✅ Storytelling Agent deployed!"
 echo ""
@@ -71,7 +74,8 @@ gcloud run deploy content-moderator-agent \
   --memory=1Gi \
   --cpu=1 \
   --min-instances=0 \
-  --max-instances=10
+  --max-instances=10 \
+  --clear-base-image
 
 echo "✅ Content Moderator Agent deployed!"
 echo ""

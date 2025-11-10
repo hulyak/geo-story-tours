@@ -64,14 +64,21 @@ async def create_tour(request: Request):
         body = await request.json()
         interests = body.get("interests", ["history", "art"])
         duration = body.get("duration", 30)
+        center_lat = body.get("latitude")
+        center_lng = body.get("longitude")
 
         tour_id = f"tour_{uuid.uuid4().hex[:8]}"
 
         # Step 1: Curator - Select locations
+        location_info = ""
+        if center_lat is not None and center_lng is not None:
+            location_info = f"\nStarting location coordinates: latitude {center_lat}, longitude {center_lng}."
+
         curator_prompt = f"""
         Create a personalized tour for a user interested in: {', '.join(interests)}.
-        Target duration: {duration} minutes.
-        Select 5-8 locations and create a tour record.
+        Target duration: {duration} minutes.{location_info}
+        Select 5-8 locations within walking distance (5km radius) and create a tour record.
+        IMPORTANT: All locations must be geographically close to each other.
         Tour ID: {tour_id}
         """
 
@@ -100,7 +107,8 @@ async def create_tour(request: Request):
                     "description": loc.get("description"),
                     "coordinates": loc.get("coordinates", {"lat": 40.7128, "lng": -74.0060}),
                     "categories": loc.get("categories", []),
-                    "average_visit_minutes": loc.get("average_visit_minutes", 5)
+                    "average_visit_minutes": loc.get("average_visit_minutes", 5),
+                    "image_url": loc.get("image_url")
                 })
 
             tour_data = {
@@ -260,7 +268,7 @@ async def list_tours():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def process_tour_async(job_id: str, interests: List[str], duration: int):
+async def process_tour_async(job_id: str, interests: List[str], duration: int, center_lat: float = None, center_lng: float = None, location_ids: List[str] = None):
     """
     Background task to process tour creation asynchronously.
     Updates job status in Firestore as it progresses.
@@ -268,50 +276,34 @@ async def process_tour_async(job_id: str, interests: List[str], duration: int):
     try:
         job_ref = db.collection('jobs').document(job_id)
 
-        # Update status: curator
-        job_ref.update({
-            "status": "curator_running",
-            "progress": 25,
-            "updated_at": datetime.now().isoformat()
-        })
-
         tour_id = f"tour_{uuid.uuid4().hex[:8]}"
 
-        # Step 1: Curator
-        curator_prompt = f"""
-        Create a personalized tour for a user interested in: {', '.join(interests)}.
-        Target duration: {duration} minutes.
-        Select 5-8 locations and create a tour record.
-        Tour ID: {tour_id}
-        """
+        # If user selected specific locations, use those instead of curator
+        if location_ids and len(location_ids) > 0:
+            # Update status: fetching user-selected locations
+            job_ref.update({
+                "status": "fetching_locations",
+                "progress": 25,
+                "updated_at": datetime.now().isoformat()
+            })
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            curator_response = await client.post(
-                f"{CURATOR_URL}/invoke",
-                json={"prompt": curator_prompt}
-            )
-            curator_result = curator_response.json()
-
-        # Get tour from Firestore
-        tour_ref = db.collection('tours').document(tour_id)
-        tour_doc = tour_ref.get()
-
-        if not tour_doc.exists:
-            locations_ref = db.collection('locations')
-            all_locations = list(locations_ref.limit(6).stream())
-
+            # Fetch the specific locations from Firestore
             locations_data = []
-            for loc_doc in all_locations:
-                loc = loc_doc.to_dict()
-                locations_data.append({
-                    "id": loc.get("id"),
-                    "name": loc.get("name"),
-                    "description": loc.get("description"),
-                    "coordinates": loc.get("coordinates", {"lat": 40.7128, "lng": -74.0060}),
-                    "categories": loc.get("categories", []),
-                    "average_visit_minutes": loc.get("average_visit_minutes", 5)
-                })
+            for loc_id in location_ids:
+                loc_doc = db.collection('locations').document(loc_id).get()
+                if loc_doc.exists:
+                    loc = loc_doc.to_dict()
+                    locations_data.append({
+                        "id": loc_id,
+                        "name": loc.get("name"),
+                        "description": loc.get("description"),
+                        "coordinates": loc.get("coordinates"),
+                        "categories": loc.get("categories", []),
+                        "average_visit_minutes": loc.get("average_visit_minutes", 5),
+                        "image_url": loc.get("image_url")
+                    })
 
+            # Create tour with user-selected locations
             tour_data = {
                 "tour_id": tour_id,
                 "interests": interests,
@@ -320,9 +312,93 @@ async def process_tour_async(job_id: str, interests: List[str], duration: int):
                 "status": "created",
                 "created_at": datetime.now().isoformat()
             }
+            tour_ref = db.collection('tours').document(tour_id)
             tour_ref.set(tour_data)
         else:
-            tour_data = tour_doc.to_dict()
+            # Use curator to select locations
+            # Update status: curator
+            job_ref.update({
+                "status": "curator_running",
+                "progress": 25,
+                "updated_at": datetime.now().isoformat()
+            })
+
+            # Step 1: Curator
+            location_info = ""
+            if center_lat is not None and center_lng is not None:
+                location_info = f"\nStarting location coordinates: latitude {center_lat}, longitude {center_lng}."
+
+            curator_prompt = f"""
+            Create a personalized tour for a user interested in: {', '.join(interests)}.
+            Target duration: {duration} minutes.{location_info}
+            Select 5-8 locations within walking distance (5km radius) and create a tour record.
+            IMPORTANT: All locations must be geographically close to each other.
+            Tour ID: {tour_id}
+            """
+
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                curator_response = await client.post(
+                    f"{CURATOR_URL}/invoke",
+                    json={"prompt": curator_prompt}
+                )
+                curator_result = curator_response.json()
+
+            # Get tour from Firestore
+            tour_ref = db.collection('tours').document(tour_id)
+            tour_doc = tour_ref.get()
+
+            if not tour_doc.exists:
+                locations_ref = db.collection('locations')
+                all_locations = list(locations_ref.stream())
+
+                # Filter locations with valid coordinates only
+                locations_data = []
+                for loc_doc in all_locations:
+                    loc = loc_doc.to_dict()
+                    coords = loc.get("coordinates")
+
+                    # Skip locations without valid coordinates
+                    if not coords or not isinstance(coords, dict) or 'lat' not in coords or 'lng' not in coords:
+                        continue
+
+                    # If user location provided, calculate distance and filter
+                    if center_lat and center_lng:
+                        import math
+                        # Haversine distance in km
+                        lat1, lon1 = math.radians(center_lat), math.radians(center_lng)
+                        lat2, lon2 = math.radians(coords['lat']), math.radians(coords['lng'])
+                        dlat, dlon = lat2 - lat1, lon2 - lon1
+                        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+                        distance_km = 6371 * 2 * math.asin(math.sqrt(a))
+
+                        # Only include locations within 10km
+                        if distance_km > 10:
+                            continue
+
+                    locations_data.append({
+                        "id": loc.get("id"),
+                        "name": loc.get("name"),
+                        "description": loc.get("description"),
+                        "coordinates": coords,
+                        "categories": loc.get("categories", []),
+                        "average_visit_minutes": loc.get("average_visit_minutes", 5),
+                        "image_url": loc.get("image_url")
+                    })
+
+                    if len(locations_data) >= 6:
+                        break
+
+                tour_data = {
+                    "tour_id": tour_id,
+                    "interests": interests,
+                    "duration": duration,
+                    "locations": locations_data,
+                    "status": "created",
+                    "created_at": datetime.now().isoformat()
+                }
+                tour_ref.set(tour_data)
+            else:
+                tour_data = tour_doc.to_dict()
 
         # Update status: optimizer
         job_ref.update({
@@ -465,6 +541,9 @@ async def create_tour_async(request: Request, background_tasks: BackgroundTasks)
         body = await request.json()
         interests = body.get("interests", ["history", "art"])
         duration = body.get("duration", 30)
+        center_lat = body.get("latitude")
+        center_lng = body.get("longitude")
+        location_ids = body.get("location_ids", [])
 
         job_id = f"job_{uuid.uuid4().hex[:12]}"
 
@@ -476,11 +555,14 @@ async def create_tour_async(request: Request, background_tasks: BackgroundTasks)
             "progress": 0,
             "interests": interests,
             "duration": duration,
+            "latitude": center_lat,
+            "longitude": center_lng,
+            "location_ids": location_ids,
             "created_at": datetime.now().isoformat()
         })
 
         # Add background task
-        background_tasks.add_task(process_tour_async, job_id, interests, duration)
+        background_tasks.add_task(process_tour_async, job_id, interests, duration, center_lat, center_lng, location_ids)
 
         return JSONResponse(content={
             "success": True,

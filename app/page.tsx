@@ -13,8 +13,27 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [selectedForTour, setSelectedForTour] = useState<any[]>([]);
+  const [selectedCity, setSelectedCity] = useState<'paris' | 'newyork'>('paris');
 
   const categories = ['all', 'history', 'food', 'art', 'hidden gems', 'architecture', 'landmarks'];
+
+  // Helper function to determine if coordinates are in Paris or New York
+  const getLocationCity = (coords: any): 'paris' | 'newyork' | null => {
+    if (!coords || !coords.lat || !coords.lng) return null;
+    const lat = coords.lat;
+    const lng = coords.lng;
+
+    // Paris bounds (approximate)
+    if (lat >= 48.8 && lat <= 48.9 && lng >= 2.2 && lng <= 2.5) {
+      return 'paris';
+    }
+    // New York bounds (approximate)
+    if (lat >= 40.6 && lat <= 40.9 && lng >= -74.1 && lng <= -73.9) {
+      return 'newyork';
+    }
+    return null;
+  };
 
   useEffect(() => {
     fetchLocations();
@@ -91,11 +110,51 @@ export default function Home() {
   };
 
   const [creatingTour, setCreatingTour] = useState(false);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
 
-  const handleCreateTour = async (interests?: string[]) => {
+  // Set user location based on selected city
+  useEffect(() => {
+    if (selectedCity === 'paris') {
+      setUserLocation({ lat: 48.8566, lng: 2.3522 }); // Paris center
+    } else {
+      setUserLocation({ lat: 40.7589, lng: -73.9851 }); // Times Square, NYC
+    }
+  }, [selectedCity]);
+
+  const addToTour = (location: any) => {
+    if (!selectedForTour.find(loc => loc.id === location.id)) {
+      setSelectedForTour([...selectedForTour, location]);
+    }
+  };
+
+  const removeFromTour = (locationId: string) => {
+    setSelectedForTour(selectedForTour.filter(loc => loc.id !== locationId));
+  };
+
+  const handleCreateTour = async (interests?: string[], useSelectedLocations: boolean = false) => {
     setCreatingTour(true);
 
     try {
+      // Ensure we have user location
+      if (!userLocation) {
+        alert('Please enable location services to create a personalized tour in your area.');
+        setCreatingTour(false);
+        return;
+      }
+
+      // Build request body
+      const requestBody: any = {
+        interests: interests || [selectedCategory === 'all' ? 'history' : selectedCategory],
+        duration: 30,
+        latitude: userLocation.lat,
+        longitude: userLocation.lng
+      };
+
+      // If using selected locations, include their IDs
+      if (useSelectedLocations && selectedForTour.length > 0) {
+        requestBody.location_ids = selectedForTour.map(loc => loc.id);
+      }
+
       // Create AbortController for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
@@ -105,10 +164,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          interests: interests || [selectedCategory === 'all' ? 'history' : selectedCategory],
-          duration: 30
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal
       });
 
@@ -121,6 +177,10 @@ export default function Home() {
       const data = await response.json();
 
       if (data.success && data.job_id) {
+        // Clear selected locations
+        if (useSelectedLocations) {
+          setSelectedForTour([]);
+        }
         router.push(`/tours/status/${data.job_id}`);
       } else {
         setCreatingTour(false);
@@ -295,6 +355,14 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Browse All Locations</h2>
             <p className="text-xl text-gray-600">Explore by category</p>
           </div>
+
+          {/* City Badge - Paris Only */}
+          <div className="flex gap-4 justify-center mb-8">
+            <div className="px-8 py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-xl">
+              🇫🇷 Paris, France
+            </div>
+          </div>
+
           <div className="flex gap-3 justify-center flex-wrap mb-12">
             {categories.map((category) => (
               <button
@@ -494,14 +562,59 @@ export default function Home() {
                 )}
                 <button
                   onClick={() => {
+                    addToTour(selectedLocation);
                     setSelectedLocation(null);
-                    handleCreateTour([selectedLocation.categories[0]]);
                   }}
-                  className="flex-1 px-6 py-4 border-2 border-orange-500 text-orange-500 rounded-xl font-semibold hover:bg-orange-50 transition-all"
+                  disabled={selectedForTour.find(loc => loc.id === selectedLocation.id)}
+                  className="flex-1 px-6 py-4 border-2 border-orange-500 text-orange-500 rounded-xl font-semibold hover:bg-orange-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Include in Tour
+                  {selectedForTour.find(loc => loc.id === selectedLocation.id) ? 'Already Added' : 'Add to Tour'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Selected Locations Floating Panel */}
+      {selectedForTour.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-orange-500 shadow-2xl z-40 animate-slide-up">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Selected Locations ({selectedForTour.length})
+                </h3>
+                <p className="text-gray-600">Add more or create your tour</p>
+              </div>
+              <button
+                onClick={() => handleCreateTour(undefined, true)}
+                disabled={creatingTour}
+                className="px-8 py-4 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                {creatingTour ? 'Creating...' : `Create Tour with ${selectedForTour.length} Location${selectedForTour.length !== 1 ? 's' : ''}`}
+              </button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {selectedForTour.map((location) => (
+                <div
+                  key={location.id}
+                  className="flex-shrink-0 w-64 bg-gray-50 rounded-xl p-4 border-2 border-orange-200 relative group"
+                >
+                  <button
+                    onClick={() => removeFromTour(location.id)}
+                    className="absolute -top-2 -right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-lg"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div
+                    className="h-32 bg-cover bg-center rounded-lg mb-3"
+                    style={{ backgroundImage: `url(${location.image_url})` }}
+                  />
+                  <h4 className="font-bold text-gray-900 mb-1 line-clamp-1">{location.name}</h4>
+                  <p className="text-sm text-gray-600 line-clamp-2">{location.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
