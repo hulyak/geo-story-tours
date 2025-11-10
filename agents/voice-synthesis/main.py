@@ -24,7 +24,7 @@ async def invoke_agent(request: Request):
         prompt = body.get("prompt", "")
 
         # Use the agent's run method with a session
-        from google.adk.sessions import InMemorySession
+        from google.adk.sessions.in_memory_session import InMemorySession
         
         session = InMemorySession()
         response = await agent.run_async(prompt, session=session)

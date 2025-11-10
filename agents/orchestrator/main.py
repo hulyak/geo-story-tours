@@ -436,8 +436,12 @@ async def process_tour_async(job_id: str, interests: List[str], duration: int, c
 
         # Step 3: Storyteller
         storyteller_prompt = f"""
-        Generate engaging 90-second stories for tour {tour_id}.
-        Each location needs a compelling narrative.
+        Please generate stories for tour_id: {tour_id}
+        
+        Instructions:
+        1. Fetch the tour data using get_tour_tool("{tour_id}")
+        2. Generate a unique, engaging 90-second story for each location
+        3. Save all stories using generate_and_save_stories_tool
         """
 
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -462,8 +466,12 @@ async def process_tour_async(job_id: str, interests: List[str], duration: int, c
 
         # Step 4: Moderator
         moderator_prompt = f"""
-        Review and moderate the content for tour {tour_id}.
-        Check for quality, safety, and appropriateness.
+        Please review and moderate tour_id: {tour_id}
+        
+        Instructions:
+        1. Fetch the tour using get_tour_tool("{tour_id}")
+        2. Review all stories for quality, safety, and appropriateness
+        3. Use moderate_content_tool to approve or flag issues
         """
 
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -489,10 +497,12 @@ async def process_tour_async(job_id: str, interests: List[str], duration: int, c
 
         # Step 5: Voice Synthesis
         voice_synthesis_prompt = f"""
-        Synthesize voice audio for all stories in tour {tour_id}.
-        Use get_pending_synthesis_jobs_tool to find the stories,
-        then use synthesize_voice_tool for each location,
-        and update_tour_with_audio_tool to save the audio URLs.
+        Please synthesize voice audio for tour_id: {tour_id}
+        
+        Instructions:
+        1. Use get_pending_synthesis_jobs_tool to find stories that need audio
+        2. For each story, use synthesize_voice_tool to create audio
+        3. Use update_tour_with_audio_tool to save the audio URLs to Firestore
         """
 
         async with httpx.AsyncClient(timeout=120.0) as client:
