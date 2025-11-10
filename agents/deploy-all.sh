@@ -17,7 +17,7 @@ echo ""
 gcloud config set project $PROJECT_ID
 
 # Deploy Tour Curator Agent
-echo "📦 [1/4] Deploying Tour Curator Agent..."
+echo "📦 [1/5] Deploying Tour Curator Agent..."
 gcloud run deploy tour-curator-agent \
   --source=./curator \
   --region=$REGION \
@@ -33,7 +33,7 @@ echo "✅ Tour Curator Agent deployed!"
 echo ""
 
 # Deploy Route Optimizer Agent
-echo "🗺️  [2/4] Deploying Route Optimizer Agent..."
+echo "🗺️  [2/5] Deploying Route Optimizer Agent..."
 gcloud run deploy route-optimizer-agent \
   --source=./optimizer \
   --region=$REGION \
@@ -49,7 +49,7 @@ echo "✅ Route Optimizer Agent deployed!"
 echo ""
 
 # Deploy Storytelling Agent
-echo "✍️  [3/4] Deploying Storytelling Agent..."
+echo "✍️  [3/5] Deploying Storytelling Agent..."
 gcloud run deploy storytelling-agent \
   --source=./storyteller \
   --region=$REGION \
@@ -65,7 +65,7 @@ echo "✅ Storytelling Agent deployed!"
 echo ""
 
 # Deploy Content Moderator Agent
-echo "🛡️  [4/4] Deploying Content Moderator Agent..."
+echo "🛡️  [4/5] Deploying Content Moderator Agent..."
 gcloud run deploy content-moderator-agent \
   --source=./moderator \
   --region=$REGION \
@@ -80,7 +80,22 @@ gcloud run deploy content-moderator-agent \
 echo "✅ Content Moderator Agent deployed!"
 echo ""
 
-echo "🎉 All agents deployed successfully!"
+# Deploy Voice Synthesis Agent
+echo "🎤 [5/5] Deploying Voice Synthesis Agent..."
+gcloud run deploy voice-synthesis-agent \
+  --source=./voice-synthesis \
+  --region=$REGION \
+  --allow-unauthenticated \
+  --set-env-vars="PROJECT_ID=$PROJECT_ID" \
+  --memory=1Gi \
+  --cpu=2 \
+  --min-instances=0 \
+  --max-instances=10
+
+echo "✅ Voice Synthesis Agent deployed!"
+echo ""
+
+echo "🎉 All 5 agents deployed successfully!"
 echo ""
 echo "📝 Next steps:"
 echo "1. Set GEMINI_API_KEY secret: gcloud run services update storytelling-agent --update-secrets=GEMINI_API_KEY=gemini-api-key:latest"
