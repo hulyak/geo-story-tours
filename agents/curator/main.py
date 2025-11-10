@@ -44,7 +44,7 @@ async def invoke_agent(request: Request):
         # Generate unique user ID
         user_id = f"user_{uuid.uuid4().hex[:8]}"
 
-        # Create session via session_service
+        # Create session via session_service (async call)
         session = await runner.session_service.create_session(
             app_name=agent.name,
             user_id=user_id
