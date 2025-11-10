@@ -24,6 +24,7 @@ async def root():
 
 @app.post("/invoke")
 async def invoke_agent(request: Request):
+    """Invoke the agent with a prompt (stateless, no session history)"""
     try:
         body = await request.json()
         prompt = body.get("prompt", "")
@@ -34,8 +35,8 @@ async def invoke_agent(request: Request):
         # Generate unique user ID
         user_id = f"user_{uuid.uuid4().hex[:8]}"
 
-        # Create session via session_service (async call)
-        session = await runner.session_service.create_session(
+        # Create session (synchronous call)
+        session = runner.session_service.create_session(
             app_name=agent.name,
             user_id=user_id
         )
