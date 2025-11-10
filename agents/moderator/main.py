@@ -35,8 +35,8 @@ async def invoke_agent(request: Request):
         # Generate unique user ID
         user_id = f"user_{uuid.uuid4().hex[:8]}"
 
-        # Create session (synchronous call)
-        session = runner.session_service.create_session(
+        # Create session (async call - must be awaited)
+        session = await runner.session_service.create_session(
             app_name=agent.name,
             user_id=user_id
         )

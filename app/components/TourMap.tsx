@@ -116,7 +116,7 @@ export default function TourMap({ locations, currentStop, onMarkerClick }: TourM
   const [zoom, setZoom] = useState(14);
   const mapRef = useRef<any>(null);
 
-  // Use a public API key for demo purposes (you should replace this with your own)
+  // Google Maps API Key - set via environment variable
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
   // Handle map load
