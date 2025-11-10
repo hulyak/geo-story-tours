@@ -1,5 +1,4 @@
 # Pin specific versions to avoid dependency resolution issues
-google-genai>=1.0.0
 google-cloud-aiplatform==1.125.0
 google-api-python-client==2.184.0
 fastapi==0.115.0

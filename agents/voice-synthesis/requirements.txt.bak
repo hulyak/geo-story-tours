@@ -1,5 +1,4 @@
 # Pin specific versions to avoid dependency resolution issues
-google-genai>=1.0.0
 google-cloud-aiplatform==1.125.0
 google-api-python-client==2.184.0
 fastapi==0.115.0
@@ -15,5 +14,6 @@ google-adk==0.1.0
 
 # Project-specific dependencies
 google-cloud-firestore==2.14.0
-google-cloud-pubsub==2.19.0
+google-cloud-storage==2.18.0
+google-cloud-texttospeech==2.16.0
 python-dotenv==1.0.0
