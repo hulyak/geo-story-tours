@@ -66,7 +66,7 @@ geo-story-tours/
 
 ### Production Ready (Live)
 - ✅ **Frontend**: Modern UI with tour browsing and filtering
-  - URL: https://geo-story-frontend-168041541697.europe-west1.run.app
+  - URL: https://geo-story-tours-168041541697.europe-west1.run.app/
   - Working "Create Your Tour" button
   - Real-time progress indicator
   - Category filtering (history, art, food, hidden gems)
